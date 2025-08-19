@@ -1,0 +1,58 @@
+Water Drop Productivity App - Phase 1 MVP
+Web Application
+Title: HydroFocus (or similar water-themed name)
+Tech Stack: Vue 3 Composition API, Supabase backend, responsive web design
+Core Features (Phase 1)
+Timer Functionality:
+Preset work sessions: 25, 30, 45 minutes
+Preset breaks: 5, 10, 15 minutes
+Basic controls: Start, Pause, Stop, Reset
+Session counter (track completed cycles)
+Visual Experience:
+Pixel art bottle that fills with water during work sessions
+Simple water drop animation from top to bottle
+Day/night background based on user's local time (browser timezone)
+Gentle water drop sound effects for notifications (optional/toggleable)
+Motivational System:
+Water-themed motivational messages throughout the experience:
+Session start: "Time to hydrate your productivity!"
+Mid-session: "Keep the flow going, you're doing great!"
+Session complete: "Well done! You've stayed hydrated and focused!"
+Break time: "Take a break and refresh yourself"
+Daily goals: "You're on track to fill 5 bottles today!"
+Random hydration tips and productivity quotes with water metaphors
+Encouraging messages based on session streaks ("Your focus is flowing like a river!")
+User System:
+Supabase authentication with Google OAuth
+Basic user profile (name, timezone auto-detected)
+Session history tracking (date, duration, completed/incomplete)
+Simple statistics dashboard (daily/weekly completed sessions)
+Design Style:
+Retro pixel art aesthetic
+Calm blue/green color palette
+Minimalist interface focusing on the bottle and timer
+Mobile-responsive design
+User Flow (MVP)
+User visits app → sees landing page with demo bottle
+Sign up/login with Google
+Choose timer preset → start session
+Watch bottle fill as time progresses with encouraging messages
+Get gentle notification with motivational message when session ends
+View simple stats of completed sessions with hydration-themed achievements
+Technical Requirements
+Progressive Web App (PWA) capabilities
+Works offline for basic timer functionality
+Responsive design (mobile-first)
+Fast loading with minimal animations
+Success Metrics
+User completes at least 3 sessions in first week
+Users return for multiple days
+Positive feedback on the water/nature theme and motivational messaging
+
+Deferred to Future Phases:
+Chrome extension
+Custom timer durations
+Marketplace/skins
+Advanced achievements
+Region-specific features
+Complex customizations

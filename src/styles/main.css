@@ -1,0 +1,450 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Color palette */
+  --primary-blue: #2563eb;
+  --secondary-blue: #3b82f6;
+  --light-blue: #93c5fd;
+  --water-blue: #06b6d4;
+  --success-green: #10b981;
+  --warning-orange: #f59e0b;
+  --error-red: #ef4444;
+  
+  /* Theme colors */
+  --bg-morning: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+  --bg-afternoon: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%);
+  --bg-evening: linear-gradient(135deg, #fce7f3 0%, #ec4899 100%);
+  --bg-night: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  
+  /* Pixel art font */
+  --pixel-font: 'Press Start 2P', cursive;
+  --regular-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  font-family: var(--regular-font);
+  line-height: 1.6;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100vh;
+  transition: background 0.5s ease;
+}
+
+/* Theme backgrounds */
+.theme-morning {
+  background: var(--bg-morning);
+}
+
+.theme-afternoon {
+  background: var(--bg-afternoon);
+}
+
+.theme-evening {
+  background: var(--bg-evening);
+}
+
+.theme-night {
+  background: var(--bg-night);
+  color: #f8fafc;
+}
+
+.app-container {
+  min-height: 100vh;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header styles */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+}
+
+.app-title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Main content layout */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.app-dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .app-dashboard {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+      "timer bottle"
+      "motivation motivation"
+      "stats stats";
+  }
+  
+  .timer-section {
+    grid-area: timer;
+  }
+  
+  .bottle-section {
+    grid-area: bottle;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .motivation-message {
+    grid-area: motivation;
+  }
+  
+  .stats-section {
+    grid-area: stats;
+  }
+}
+
+/* Pixel text styling */
+.pixel-text {
+  font-family: var(--pixel-font);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-rendering: pixelated;
+  image-rendering: pixelated;
+}
+
+.pixel-text.large {
+  font-size: 1rem;
+}
+
+.pixel-text.small {
+  font-size: 0.625rem;
+}
+
+/* Button styles */
+.pixel-btn {
+  font-family: var(--pixel-font);
+  font-size: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border: 3px solid #1f2937;
+  background: #f8fafc;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pixel-btn:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pixel-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pixel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.pixel-btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.625rem;
+}
+
+/* Timer specific styles */
+.timer-container {
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid #1f2937;
+  border-radius: 8px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.timer-display {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.time-remaining {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-blue);
+}
+
+@media (max-width: 768px) {
+  .time-remaining {
+    font-size: 2rem;
+  }
+}
+
+.session-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.timer-presets {
+  margin-bottom: 1.5rem;
+}
+
+.timer-presets h3 {
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.preset-group {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  padding: 0.75rem 1rem;
+  min-width: 80px;
+}
+
+.preset-btn.active {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.preset-btn.break-btn.active {
+  background: var(--success-green);
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  flex: 1;
+  min-width: 100px;
+}
+
+.start-btn {
+  background: var(--success-green);
+  border-color: var(--success-green);
+  color: white;
+}
+
+.pause-btn {
+  background: var(--warning-orange);
+  border-color: var(--warning-orange);
+  color: white;
+}
+
+.resume-btn {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: white;
+}
+
+.stop-btn {
+  background: var(--error-red);
+  border-color: var(--error-red);
+  color: white;
+}
+
+.progress-container {
+  margin-top: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border: 2px solid #1f2937;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--water-blue);
+  transition: width 0.5s ease;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.2) 2px,
+      rgba(255,255,255,0.2) 4px
+    );
+  animation: flow 2s linear infinite;
+}
+
+@keyframes flow {
+  0% { background-position: 0 0; }
+  100% { background-position: 8px 0; }
+}
+
+/* Motivation message */
+.motivation-message {
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid #1f2937;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.motivation-text {
+  font-size: 1rem;
+  color: var(--primary-blue);
+  margin: 0;
+}
+
+/* Water drop animations */
+.water-drops {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.water-drop {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--water-blue);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(45deg);
+  opacity: 0.7;
+  animation: dropFall 3s linear infinite;
+  left: calc(50% + (var(--offset, 0) * 100px));
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes dropFall {
+  0% {
+    top: -50px;
+    opacity: 0.7;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+  }
+}
+
+.water-drop:nth-child(1) { --offset: -2; }
+.water-drop:nth-child(2) { --offset: 0; }
+.water-drop:nth-child(3) { --offset: 2; }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0.5rem;
+  }
+  
+  .app-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .timer-controls {
+    flex-direction: column;
+  }
+  
+  .control-btn {
+    min-width: auto;
+  }
+  
+  .preset-group {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .preset-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* Loading states */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error states */
+.error-message {
+  background: #fef2f2;
+  color: var(--error-red);
+  padding: 1rem;
+  border: 2px solid var(--error-red);
+  border-radius: 8px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
