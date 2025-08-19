@@ -118,9 +118,6 @@ export default {
       try {
         await signInWithGoogle();
 
-        console.log('user', user.value);
-        
-        
         // Wait for user to be set
         if (user.value) {
           emit('user-authenticated', user.value)

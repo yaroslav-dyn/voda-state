@@ -10,8 +10,8 @@ export function useSupabase() {
     isLoading.value = true
     
     // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+    // await new Promise(resolve => setTimeout(resolve, 1000))
+    user.value = null;
     // Mock user data
     user.value = {
       id: 'mock-user-id',
@@ -52,7 +52,6 @@ export function useSupabase() {
     
     sessions.push(newSession)
     localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
-    
     return newSession
   }
 
@@ -67,7 +66,7 @@ export function useSupabase() {
   }
 
   // Initialize on module load
-  initializeAuth()
+    initializeAuth()
 
   return {
     user,

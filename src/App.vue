@@ -9,7 +9,7 @@
         <h1 class="app-title pixel-text">💧 VodaState</h1>
         <div
           class="user-info"
-          v-if="user"
+          v-if="!isLoading && user"
         >
           <span class="pixel-text">{{ user.email }}</span>
           <button
@@ -27,14 +27,14 @@
         />
 
         <div
-          v-else
+          v-else-if="!isLoading"
           class="app-dashboard"
         >
           <!-- Motivation Message -->
           <div class="motivation-message">
             <p class="pixel-text motivation-text">{{ currentMessage }}</p>
           </div>
-          
+
           <!-- Timer Section -->
           <section class="timer-section">
             <Timer
@@ -94,12 +94,13 @@ export default {
     Auth
   },
   setup() {
-    const { user, signOut, getSessions } = useSupabase()
+    const { user, signOut, getSessions, isLoading } = useSupabase()
     const { getMessage } = useMotivation()
     
     const timerProgress = ref(0)
     const isTimerActive = ref(false)
     const showDrops = ref(false)
+    const isUserLogged = ref(false)
     const userSessions = ref([])
     const currentMessage = ref('Welcome to HydroFocus! Stay hydrated and focused.')
 
@@ -111,8 +112,9 @@ export default {
 
     // Handle user authentication
     const handleUserAuth = (userData) => {
-      loadUserSessions()
       currentMessage.value = getMessage('welcome', userData.email)
+      isUserLogged.value = !!userData;
+      loadUserSessions()
     }
 
     // Handle session events
@@ -138,7 +140,7 @@ export default {
     const loadUserSessions = async () => {
       try {
         const sessions = await getSessions()
-        userSessions.value = sessions
+        // userSessions.value = sessions
       } catch (error) {
         console.error('Failed to load sessions:', error)
       }
@@ -172,6 +174,7 @@ export default {
 
     return {
       user,
+      isUserLogged,
       signOut,
       themeClass,
       timerProgress,

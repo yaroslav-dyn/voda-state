@@ -249,7 +249,6 @@ export default {
 
     onUnmounted(() => {
       clearInterval(completionInterval);
-      saveSession();
     });
 
     return {
