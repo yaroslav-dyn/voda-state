@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, watch, watchEffect } from 'vue'
 
 export default {
   name: 'Bottle',
@@ -65,8 +65,11 @@ export default {
   },
   setup(props) {
     // Motivational messages based on fill level
+
+    
     const fillMessage = computed(() => {
       const fill = props.fillPercentage
+      console.log("🚀 ~ setup ~ fill:", props.isActive)
       
       if (fill === 0) return ''
       if (fill < 25) return '💧 Starting to fill up!'
@@ -77,6 +80,7 @@ export default {
       
       return ''
     })
+
 
     return {
       fillMessage

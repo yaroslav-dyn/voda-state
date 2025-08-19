@@ -1,37 +1,56 @@
 <template>
-  <div id="app" :class="themeClass">
+  <div
+    id="app"
+    :class="themeClass"
+  >
     <div class="app-container">
       <!-- Header -->
       <header class="app-header">
         <h1 class="app-title pixel-text">💧 VodaState</h1>
-        <div class="user-info" v-if="user">
+        <div
+          class="user-info"
+          v-if="user"
+        >
           <span class="pixel-text">{{ user.email }}</span>
-          <button @click="signOut" class="pixel-btn pixel-btn-small">Sign Out</button>
+          <button
+            @click="signOut"
+            class="pixel-btn pixel-btn-small"
+          >Sign Out</button>
         </div>
       </header>
 
       <!-- Main Content -->
       <main class="main-content">
-        <Auth v-if="!user" @user-authenticated="handleUserAuth" />
-        
-        <div v-else class="app-dashboard">
+        <Auth
+          v-if="!user"
+          @user-authenticated="handleUserAuth"
+        />
+
+        <div
+          v-else
+          class="app-dashboard"
+        >
+          <!-- Motivation Message -->
+          <div class="motivation-message">
+            <p class="pixel-text motivation-text">{{ currentMessage }}</p>
+          </div>
+          
           <!-- Timer Section -->
           <section class="timer-section">
-            <Timer 
+            <Timer
               @session-complete="handleSessionComplete"
               @session-start="handleSessionStart"
+              @progress-update="updateTimerProgress"
             />
           </section>
 
           <!-- Bottle Section -->
           <section class="bottle-section">
-            <Bottle :fill-percentage="timerProgress" :is-active="isTimerActive" />
+            <Bottle
+              :fill-percentage="timerProgress"
+              :is-active="isTimerActive"
+            />
           </section>
-
-          <!-- Motivation Message -->
-          <div class="motivation-message">
-            <p class="pixel-text motivation-text">{{ currentMessage }}</p>
-          </div>
 
           <!-- Stats Section -->
           <section class="stats-section">
@@ -41,8 +60,16 @@
       </main>
 
       <!-- Water Drop Animations -->
-      <div class="water-drops" v-if="showDrops">
-        <div class="water-drop" v-for="n in 3" :key="n" :style="{ '--delay': n * 0.5 + 's' }"></div>
+      <div
+        class="water-drops"
+        v-if="showDrops"
+      >
+        <div
+          class="water-drop"
+          v-for="n in 3"
+          :key="n"
+          :style="{ '--delay': n * 0.5 + 's' }"
+        ></div>
       </div>
     </div>
   </div>
