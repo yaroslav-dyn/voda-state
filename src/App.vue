@@ -36,6 +36,12 @@
           >
             Exit
           </button>
+          <button
+            @click="openSettigns"
+            class="plane-btn settings-icon"
+          >
+            <span class="icon_emoji --big">⚙️</span>
+          </button>
         </div>
       </header>
 
@@ -79,6 +85,12 @@
         </div>
       </main>
 
+      <Settings
+        v-if="isSettingsOpen"
+        isSettingsOpen="isSettingsOpen"
+        @close-modal="() => isSettingsOpen = false"
+      />
+
       <!--SECTION: Water Drop Animations -->
       <section
         class="water-drops"
@@ -106,6 +118,7 @@ import { getTimeOfDay } from "./utils/timeUtils";
 import { useUserStore } from "./stores/user";
 import { storeToRefs } from "pinia";
 import dropLogo from "/img/drop_timer_512px.png";
+import Settings from "./components/Settings.vue";
 
 const APP_NAME = import.meta.env.VITE_APP_NAME;
 
@@ -123,6 +136,7 @@ const showDrops = ref(false);
 const isUserLogged = ref(false);
 const userSessions = ref([]);
 const appName = ref(APP_NAME);
+const isSettingsOpen = ref(false);
 const currentMessage = ref(
   `Welcome to ${APP_NAME}! Stay hydrated and focused.`
 );
@@ -184,6 +198,10 @@ const updateTimerProgress = (progress) => {
     currentMessage.value = getMessage("three_quarter_progress");
   }
 };
+
+const openSettigns = async () => {
+  isSettingsOpen.value = !isSettingsOpen.value
+}
 
 watchEffect(async () => {
   await loadUserSessions();
