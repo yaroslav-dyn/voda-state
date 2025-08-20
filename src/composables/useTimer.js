@@ -1,8 +1,10 @@
 import { ref, computed, onMounted, watch } from 'vue'
-import { useSupabase } from "../composables/useSupabase";
+import { useUserStore } from '../stores/user'
+import { storeToRefs } from 'pinia';
 
 export function useTimer() {
-  const { user } = useSupabase();
+  const userStore = useUserStore()
+  const { user, ghostUser } = storeToRefs(userStore);
 
   const timeRemaining = ref(0)
   const selectedDuration = ref(0)
@@ -13,48 +15,7 @@ export function useTimer() {
   
   let timerInterval = null
 
-  onMounted(()=> {
-    // setSavedSession();
-    console.log('useTimer onMounted');
-    
-  })
-
-  watch(sessionCount, (val) => {
-    saveSession(val)
-  })
-
-  const setSavedSession = () => {
-    const storageSesionItem = localStorage.getItem(`vs_session_${user.value.id}`)
-    if (!storageSesionItem) return
-
-    const savedSession = JSON.parse(storageSesionItem);
-    // timeRemaining.value = savedSession?.timeRemaining
-    // isActive.value = savedSession?.isActive
-    // isPaused.value = savedSession?.isPaused
-    // sessionType.value = savedSession?.sessionType 
-    // selectedDuration.value = savedSession?.selectedDuration
-    sessionCount.value = savedSession?.sessionCount
-    // savedSession?.isActive && (startTimer())
-  }
-
-  const saveSession = (sessionCount) => {
-
-    const savedSessionObject = JSON.stringify({
-      // timeRemaining: timeRemaining.value,
-      // isActive: isActive.value,
-      // isPaused: isPaused.value,
-      // sessionType: sessionType.value,
-      // selectedDuration: selectedDuration.value,
-      sessionCount: sessionCount
-    });
-    localStorage.setItem(`vs_session_${user?.value?.id}`, savedSessionObject);
-};
-
-  const deleteLocalSection = () =>
-    localStorage.removeItem(`vs_session_${user?.value?.id}`)
-
   const startTimer = () => {
-    console.log("🚀 ~ startTimer ~ timeRemaining.value:", timeRemaining.value, selectedDuration.value)
     if (timeRemaining.value === selectedDuration.value) {
       sessionCount.value += 1
     } else if (timeRemaining.value === 0) {
@@ -64,7 +25,6 @@ export function useTimer() {
     isActive.value = true
     isPaused.value = false
 
-    // saveSession();
       timerInterval = setInterval(() => {
       if (timeRemaining.value > 0) {
         timeRemaining.value -= 1
@@ -110,7 +70,7 @@ export function useTimer() {
     stopTimer()
     timeRemaining.value = 0
     sessionCount.value = 0
-    deleteLocalSection()
+    // deleteLocalSection()
   }
 
   const setTimer = (duration, type = 'work') => {

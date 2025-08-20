@@ -88,14 +88,14 @@
   image-rendering: pixelated;
   
   /* Water texture */
-  background-image: 
+  /* background-image: 
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 4px,
-      rgba(255, 255, 255, 0.1) 4px,
-      rgba(255, 255, 255, 0.1) 8px
-    );
+      rgba(8, 114, 227, 0.1) 4px,
+      rgba(8, 114, 227, 0.1) 8px
+    ); */
   
   animation: waterShimmer 3s ease-in-out infinite;
 }

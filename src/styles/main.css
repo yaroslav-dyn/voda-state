@@ -74,8 +74,17 @@ body {
 }
 
 .app-title {
-  font-size: 1.5rem;
+  font-size: 1.8rem !important;
   margin: 0;
+}
+.app-header__logo {
+  display: flex;
+  align-items: center;
+}
+
+.d_logo {
+  max-width: 64px;
+  max-height: 64px;
 }
 
 .user-info {
@@ -180,6 +189,20 @@ body {
   font-size: 0.625rem;
 }
 
+.auth-btn {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 10px;
+}
+.auth-btn__inner span {
+  vertical-align: middle;
+}
+
+.auth-btn.--warning {
+  background-color: var(--warning-orange);
+  border-color: var(--warning-orange);
+}
+
 /* Timer specific styles */
 .timer-container {
   background: rgba(255, 255, 255, 0.9);
@@ -209,10 +232,23 @@ body {
 }
 
 .session-info {
+  margin-top: 1.6rem;
+}
+
+.session-type {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+}
+
+.session-type__item {
+  display: flex;
+  align-items: baseline;
+  column-gap: 0.8rem;
+}
+
+.session-type__icon {
+  font-size: 1.2rem;
 }
 
 .timer-presets {
@@ -449,4 +485,12 @@ body {
 .empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
+}
+
+.icon_emoji {
+  font-size: 1rem;
+} 
+
+.icon_emoji.--big {
+  font-size: 2rem;
 }

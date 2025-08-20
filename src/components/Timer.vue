@@ -6,15 +6,27 @@
         {{ formattedTime }}
       </div>
       <div class="session-info">
-        <span class="session-type pixel-text">{{ sessionTypeLabel }}</span>
-        <span class="session-counter pixel-text"
-          >Session {{ sessionCount }}</span
-        >
+        <div class="session-type pixel-text">
+          <div class="session-type__item" v-if="isWorkTypeLabel">
+            <span class="session-type__icon">💼</span>
+            <span>Work Time</span>
+          </div>
+          <div class="session-type__item" v-else>
+            <span class="session-type__icon">☕</span>
+            <span>Break Time</span>
+          </div>
+          <div class="session-counter pixel-text">
+            Session {{ sessionCount }}
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Timer Presets -->
-    <div class="timer-presets" v-if="!isActive">
+    <div
+      class="timer-presets"
+      v-if="!isActive"
+    >
       <h3 class="pixel-text">Work Sessions</h3>
       <div class="preset-group">
         <button
@@ -76,18 +88,27 @@
         >
           ▶️ Resume
         </button>
-        <button @click="stopTimer" class="pixel-btn control-btn stop-btn">
+        <button
+          @click="stopTimer"
+          class="pixel-btn control-btn stop-btn"
+        >
           🛑 Stop
         </button>
       </template>
 
-      <button @click="resetTimer" class="pixel-btn control-btn reset-btn">
+      <button
+        @click="resetTimer"
+        class="pixel-btn control-btn reset-btn"
+      >
         🔄 Reset
       </button>
     </div>
 
     <!-- Progress Bar -->
-    <div class="progress-container" v-if="selectedDuration">
+    <div
+      class="progress-container"
+      v-if="selectedDuration"
+    >
       <div class="progress-bar">
         <div
           class="progress-fill"
@@ -154,8 +175,12 @@ export default {
     });
 
     const sessionTypeLabel = computed(() => {
-      return sessionType.value === "work" ? "💼 Work Time" : "☕ Break Time";
+      return sessionType.value === "work"
+        ? "<span>💼<span> Work Time"
+        : "☕ Break Time";
     });
+
+    const isWorkTypeLabel = computed(() => sessionType.value === "work");
 
     const progressPercentage = computed(() => {
       if (!selectedDuration.value) return 0;
@@ -262,6 +287,7 @@ export default {
       breakPresets,
       formattedTime,
       sessionTypeLabel,
+      isWorkTypeLabel,
       progressPercentage,
       startTimer,
       pauseTimer,
