@@ -70,7 +70,7 @@
         <!-- Sign In Button -->
         <button
           @click="signInWithGoogle"
-          :disabled="isLoading"
+          :disabled="isLoading || !isDev"
           class="pixel-btn auth-btn google-btn"
         >
           <div
@@ -78,7 +78,7 @@
             v-if="!isLoading"
           >
             <span class="icon_emoji --big">🔐</span>
-            <span> Sign in with Google</span>
+            <span> Sign in with Google {{ !isDev ? 'Comming soon!' : '' }}</span>
           </div>
           <span v-else>⏳ Signing in...</span>
         </button>
@@ -128,6 +128,8 @@ export default {
     const userStore = useUserStore()
     const signInGostMode = userStore?.signInGostMode
     const { user } = storeToRefs(userStore)
+
+    const isDev = ref(import.meta.env.DEV)
       
     const signInWithGoogle = userStore.signInWithGoogle
 

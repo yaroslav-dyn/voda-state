@@ -61,7 +61,6 @@ export function useTimer() {
     if (timerInterval) {
       clearInterval(timerInterval)
       timerInterval = null
-      // sessionCount.value && sessionCount.value--
     } else {
     }
   }
@@ -77,7 +76,21 @@ export function useTimer() {
     if (!isActive.value) {
       selectedDuration.value = duration
       timeRemaining.value = duration
-      sessionType.value = type
+      sessionType.value = type  
+    }
+  }
+
+  const setDefaultTimers = (workDuration, breakDuration) => {
+    console.log("🚀 ~ setDefaultTimers ~ sessionType:", sessionType.value)
+    switch (sessionType.value) {
+      case 'work':
+       selectedDuration.value = workDuration.value
+       break
+       case 'break':
+      selectedDuration.value = breakDuration.value
+      break
+      default:
+        return undefined
     }
   }
 
@@ -101,6 +114,7 @@ export function useTimer() {
     resumeTimer,
     stopTimer,
     resetTimer,
-    setTimer
+    setTimer,
+    setDefaultTimers
   }
 }

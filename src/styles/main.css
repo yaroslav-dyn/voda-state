@@ -39,6 +39,7 @@ body {
   transition: background 0.5s ease;
 }
 
+
 /* Theme backgrounds */
 .theme-morning {
   background: var(--bg-morning);
@@ -92,6 +93,27 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+
+@media screen and (max-width: 767px) {
+
+  .user-info {
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+  }
+  .user-info__nick {
+    flex-basis: 80%;
+    order: 0;
+  }
+  .user-info__settings {
+    order: 1;
+  }
+  .user-info__button {
+    order: 2;
+  }
+  
 }
 
 /* Main content layout */
@@ -227,7 +249,7 @@ body {
   color: var(--primary-blue);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .time-remaining {
     font-size: 2rem;
   }
@@ -517,6 +539,10 @@ body {
 
 .icon_emoji {
   font-size: 1rem;
+}
+
+.icon_emoji.--medium {
+  font-size: 1.4rem;
 }
 
 .icon_emoji.--big {

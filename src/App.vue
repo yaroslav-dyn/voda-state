@@ -20,25 +20,25 @@
         >
           <span
             v-if="!ghostUser"
-            class="pixel-text"
+            class="user-info__nick pixel-text"
           >{{ user.email }}</span>
           <button
             v-if="user"
             @click="signOut"
-            class="pixel-btn pixel-btn-small"
+            class="user-info__button pixel-btn pixel-btn-small"
           >
             Sign Out
           </button>
           <button
             v-if="ghostUser"
             @click="signOut"
-            class="pixel-btn pixel-btn-small"
+            class="user-info__button pixel-btn pixel-btn-small"
           >
             Exit
           </button>
           <button
             @click="openSettigns"
-            class="plane-btn settings-icon"
+            class="user-info__settings plane-btn settings-icon"
           >
             <span class="icon_emoji --big">⚙️</span>
           </button>
@@ -85,11 +85,13 @@
         </div>
       </main>
 
-      <Settings
-        v-if="isSettingsOpen"
-        isSettingsOpen="isSettingsOpen"
-        @close-modal="() => isSettingsOpen = false"
-      />
+      <Transition name="slide-rihgt">
+        <Settings
+          v-if="isSettingsOpen"
+          isSettingsOpen="isSettingsOpen"
+          @close-modal="() => isSettingsOpen = false"
+        />
+      </Transition>
 
       <!--SECTION: Water Drop Animations -->
       <section
@@ -115,7 +117,7 @@ import Stats from "./components/Stats.vue";
 import Auth from "./components/Auth.vue";
 import { useMotivation } from "./composables/useMotivation";
 import { getTimeOfDay } from "./utils/timeUtils";
-import { useUserStore } from "./stores/user";
+import { useUserStore } from "./stores";
 import { storeToRefs } from "pinia";
 import dropLogo from "/img/drop_timer_512px.png";
 import Settings from "./components/Settings.vue";
@@ -130,12 +132,12 @@ const getSessions = userStore.getSessions;
 const saveSession = userStore.saveSession;
 const { getMessage } = useMotivation();
 
+const appName = ref(APP_NAME);
 const timerProgress = ref(0);
 const isTimerActive = ref(false);
 const showDrops = ref(false);
 const isUserLogged = ref(false);
 const userSessions = ref([]);
-const appName = ref(APP_NAME);
 const isSettingsOpen = ref(false);
 const currentMessage = ref(
   `Welcome to ${APP_NAME}! Stay hydrated and focused.`
@@ -167,9 +169,7 @@ const handleSessionComplete = async (sessionData) => {
   timerProgress.value = 0;
 
   currentMessage.value = getMessage("session_complete", sessionData.type);
-
-  console.log("session");
-
+  console.log('##handleSessionComplete', showDrops.value)
   // Save to database
   await saveSession(sessionData);
   await loadUserSessions();
