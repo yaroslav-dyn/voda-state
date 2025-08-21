@@ -22,7 +22,7 @@
 
           <div class="preset-group">
             <button
-              v-for="preset in workPresets"
+              v-for="preset in getTimePressets().work"
               :key="preset.minutes"
               @click="setDefaultTimerParams(preset.minutes * 60, 'work')"
               class="pixel-btn preset-btn"
@@ -40,7 +40,7 @@
 
           <div class="preset-group">
             <button
-              v-for="preset in breakPresets"
+              v-for="preset in getTimePressets().break"
               :key="preset.minutes"
               @click="setDefaultTimerParams(preset.minutes * 60, 'break')"
               class="pixel-btn preset-btn break-btn"
@@ -100,7 +100,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { storeToRefs } from "pinia";
-import { workPresets, breakPresets } from "../utils";
+import { workPresets, breakPresets, getTimePressets } from "../utils";
 const { isSettingsOpen } = defineProps(["isSettingsOpen"]);
 const emit = defineEmits(["close-modal"]);
 import { useSettingsStore } from "../stores/settings";
