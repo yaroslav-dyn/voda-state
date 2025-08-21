@@ -54,9 +54,10 @@
         </div>
       </section>
 
-      <section class="settings_items">
+      <section :class="['settings_items', { 'disabled_items': !defaultWorkDuration || !defaultBreakDuration }]">
         <div class="settings_item">
           <input
+            :disabled="!defaultWorkDuration || !defaultBreakDuration"
             class="settings_pixel__input"
             :checked="isStartWorkAuto"
             @change="changeStartWorkAuto"
@@ -72,9 +73,10 @@
         </div>
       </section>
 
-      <section class="settings_items">
+      <section :class="['settings_items', { 'disabled_items': !defaultWorkDuration || !defaultBreakDuration }]">
         <div class="settings_item">
           <input
+            :disabled="!defaultWorkDuration || !defaultBreakDuration"
             class="settings_pixel__input"
             :checked="isStartBreakAuto"
             @change="changeStartBreakAuto"
@@ -166,6 +168,10 @@ const closeModal = async () => {
   font-size: 1.8rem;
   line-height: 1.4;
   margin-bottom: 2rem;
+}
+
+.settings_items.disabled_items {
+  opacity: 0.5;
 }
 
 .settings_item {
