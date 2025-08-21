@@ -1,24 +1,24 @@
 <template>
   <div class="stats-container">
     <h2 class="pixel-text stats-title">📊 Your Hydration Stats</h2>
-    
+
     <!-- Quick Stats -->
     <div class="quick-stats">
       <div class="stat-card">
         <div class="stat-number pixel-text">{{ todaysSessions }}</div>
         <div class="stat-label pixel-text">Today</div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-number pixel-text">{{ thisWeekSessions }}</div>
         <div class="stat-label pixel-text">This Week</div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-number pixel-text">{{ totalSessions }}</div>
         <div class="stat-label pixel-text">Total</div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-number pixel-text">{{ currentStreak }}</div>
         <div class="stat-label pixel-text">Streak</div>
@@ -27,11 +27,14 @@
 
     <!-- Daily Goal Progress -->
     <div class="daily-goal">
-      <h3 class="pixel-text">🎯 Daily Goal (5 Sessions)</h3>
+      <h3 class="pixel-text">
+        <span class="icon_emoji --medium">🎯</span>
+        <span> Daily Goal (5 Sessions)</span>
+      </h3>
       <div class="goal-progress">
         <div class="goal-bottles">
-          <div 
-            v-for="n in 5" 
+          <div
+            v-for="n in 5"
             :key="n"
             class="goal-bottle"
             :class="{ 'completed': n <= todaysSessions }"
@@ -46,11 +49,16 @@
     </div>
 
     <!-- Recent Sessions -->
-    <div class="recent-sessions" v-if="recentSessions.length > 0">
-      <h3 class="pixel-text">🕐 Recent Sessions</h3>
+    <div
+      class="recent-sessions"
+      v-if="recentSessions.length > 0"
+    >
+      <h3 class="pixel-text">
+        <span class="icon_emoji">🕐</span> Recent Sessions
+      </h3>
       <div class="session-list">
-        <div 
-          v-for="session in recentSessions" 
+        <div
+          v-for="session in recentSessions"
           :key="session.id"
           class="session-item"
           :class="{ 'completed': session.completed }"
@@ -74,11 +82,14 @@
     </div>
 
     <!-- Achievement System -->
-    <div class="achievements" v-if="unlockedAchievements.length > 0">
+    <div
+      class="achievements"
+      v-if="unlockedAchievements.length > 0"
+    >
       <h3 class="pixel-text">🏆 Achievements</h3>
       <div class="achievement-list">
-        <div 
-          v-for="achievement in unlockedAchievements" 
+        <div
+          v-for="achievement in unlockedAchievements"
           :key="achievement.id"
           class="achievement-item"
         >
@@ -92,7 +103,10 @@
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" v-if="totalSessions === 0">
+    <div
+      class="empty-state"
+      v-if="totalSessions === 0"
+    >
       <div class="empty-icon">🌱</div>
       <p class="pixel-text">Start your first session to begin tracking your productivity journey!</p>
     </div>

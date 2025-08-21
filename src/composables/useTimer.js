@@ -1,6 +1,11 @@
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useUserStore } from '../stores/user'
+import { storeToRefs } from 'pinia';
 
 export function useTimer() {
+  const userStore = useUserStore()
+  const { user, ghostUser } = storeToRefs(userStore);
+
   const timeRemaining = ref(0)
   const selectedDuration = ref(0)
   const isActive = ref(false)
@@ -11,15 +16,16 @@ export function useTimer() {
   let timerInterval = null
 
   const startTimer = () => {
-    if (timeRemaining.value === 0) {
+    if (timeRemaining.value === selectedDuration.value) {
+      sessionCount.value += 1
+    } else if (timeRemaining.value === 0) {
+        sessionCount.value += 1
       timeRemaining.value = selectedDuration.value
-    }
-    
+    } 
     isActive.value = true
     isPaused.value = false
-    sessionCount.value += 1
 
-    timerInterval = setInterval(() => {
+      timerInterval = setInterval(() => {
       if (timeRemaining.value > 0) {
         timeRemaining.value -= 1
       } else {
@@ -51,10 +57,11 @@ export function useTimer() {
   const stopTimer = () => {
     isActive.value = false
     isPaused.value = false
-    
+  
     if (timerInterval) {
       clearInterval(timerInterval)
       timerInterval = null
+    } else {
     }
   }
 
@@ -62,15 +69,31 @@ export function useTimer() {
     stopTimer()
     timeRemaining.value = 0
     sessionCount.value = 0
+    // deleteLocalSection()
   }
 
   const setTimer = (duration, type = 'work') => {
     if (!isActive.value) {
       selectedDuration.value = duration
       timeRemaining.value = duration
-      sessionType.value = type
+      sessionType.value = type  
     }
   }
+
+  const setDefaultTimers = (workDuration, breakDuration) => {
+    console.log("🚀 ~ setDefaultTimers ~ sessionType:", sessionType.value)
+    switch (sessionType.value) {
+      case 'work':
+       selectedDuration.value = workDuration.value
+       break
+       case 'break':
+      selectedDuration.value = breakDuration.value
+      break
+      default:
+        return undefined
+    }
+  }
+
 
   // Computed properties
   const progress = computed(() => {
@@ -91,6 +114,7 @@ export function useTimer() {
     resumeTimer,
     stopTimer,
     resetTimer,
-    setTimer
+    setTimer,
+    setDefaultTimers
   }
 }
