@@ -1,27 +1,19 @@
 <template>
-  <div
-    id="app"
-    :class="themeClass"
-  >
+  <div id="app" :class="themeClass">
     <div class="app-container">
       <!--SECTION: Header -->
       <header class="app-header">
         <div class="app-header__logo">
-          <img
-            class="d_logo"
-            :src="dropLogo"
-            :alt="appName"
-          />
+          <img class="d_logo" :src="dropLogo" :alt="appName" />
           <h1 class="app-title pixel-text">{{ appName }}</h1>
         </div>
         <div
-          class="user-info"
+          :class="['user-info', { '--ghost-user': ghostUser }]"
           v-if="!isLoading && (user || ghostUser)"
         >
-          <span
-            v-if="!ghostUser"
-            class="user-info__nick pixel-text"
-          >{{ user.email }}</span>
+          <span v-if="!ghostUser" class="user-info__nick pixel-text">{{
+            user.email
+          }}</span>
           <button
             v-if="user"
             @click="signOut"
@@ -32,7 +24,7 @@
           <button
             v-if="ghostUser"
             @click="signOut"
-            class="user-info__button pixel-btn pixel-btn-small"
+            :class="['user-info__button pixel-btn pixel-btn-small']"
           >
             Exit
           </button>
@@ -40,22 +32,16 @@
             @click="openSettigns"
             class="user-info__settings plane-btn settings-icon"
           >
-            <span class="icon_emoji --big">⚙️</span>
+            <span class="icon_emoji --x-big --bold">⛭</span>
           </button>
         </div>
       </header>
 
       <!--SECTION: Main Content -->
       <main class="main-content">
-        <Auth
-          v-if="!user && !ghostUser"
-          @user-authenticated="handleUserAuth"
-        />
+        <Auth v-if="!user && !ghostUser" @user-authenticated="handleUserAuth" />
 
-        <div
-          v-else-if="!isLoading"
-          class="app-dashboard"
-        >
+        <div v-else-if="!isLoading" class="app-dashboard">
           <!-- Motivation Message -->
           <div class="motivation-message">
             <p class="pixel-text motivation-text">{{ currentMessage }}</p>
@@ -89,15 +75,12 @@
         <Settings
           v-if="isSettingsOpen"
           isSettingsOpen="isSettingsOpen"
-          @close-modal="() => isSettingsOpen = false"
+          @close-modal="() => (isSettingsOpen = false)"
         />
       </Transition>
 
       <!--SECTION: Water Drop Animations -->
-      <section
-        class="water-drops"
-        v-if="showDrops"
-      >
+      <section class="water-drops" v-if="showDrops">
         <div
           class="water-drop"
           v-for="n in 3"
@@ -110,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watchEffect } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import Timer from "./components/Timer.vue";
 import Bottle from "./components/Bottle.vue";
 import Stats from "./components/Stats.vue";
@@ -169,7 +152,7 @@ const handleSessionComplete = async (sessionData) => {
   timerProgress.value = 0;
 
   currentMessage.value = getMessage("session_complete", sessionData.type);
-  console.log('##handleSessionComplete', showDrops.value)
+  console.log("##handleSessionComplete", showDrops.value);
   // Save to database
   await saveSession(sessionData);
   await loadUserSessions();
@@ -200,8 +183,8 @@ const updateTimerProgress = (progress) => {
 };
 
 const openSettigns = async () => {
-  isSettingsOpen.value = !isSettingsOpen.value
-}
+  isSettingsOpen.value = !isSettingsOpen.value;
+};
 
 watchEffect(async () => {
   await loadUserSessions();

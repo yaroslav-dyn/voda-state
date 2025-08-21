@@ -257,8 +257,6 @@ const playCompletionSound = () => {
 const completionInterval = setInterval(checkSessionCompletion, 1000);
 
 onMounted(()=> {
-  console.log('getTimePressets', getTimePressets);
-  
   setDefaultTimers(defaultWorkDuration, defaultBreakDuration)
 })
 

@@ -101,8 +101,16 @@ body {
   .user-info {
     flex-wrap: wrap;
     justify-content: space-between;
-
   }
+  
+  .user-info.--ghost-user {
+    width: 100%;
+  }
+
+  .user-info.--ghost-user .user-info__button {
+    order: 0;
+  }
+
   .user-info__nick {
     flex-basis: 80%;
     order: 0;
@@ -547,6 +555,13 @@ body {
 
 .icon_emoji.--big {
   font-size: 2rem;
+}
+.icon_emoji.--x-big {
+  font-size: 2.6rem;
+}
+
+.--bold {
+  font-weight: bold;
 }
 
 .settings-icon:hover {

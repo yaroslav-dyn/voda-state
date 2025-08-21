@@ -15,6 +15,7 @@ export function getTimeOfDay() {
 export function getTimeBasedGreeting() {
   const timeOfDay = getTimeOfDay()
   
+  //NOTE: Motivation greating.
   const greetings = {
     morning: 'Good morning! Ready to start your day with focus?',
     afternoon: 'Good afternoon! Time to dive into productive work!',
