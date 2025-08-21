@@ -3,8 +3,8 @@ import { ref } from 'vue'
 
 export const useSettingsStore = defineStore('settings', () => {
 
-  const defaultWorkDuration = ref(25)
-  const defaultBreakDuration = ref(5)
+  const defaultWorkDuration = ref(null)
+  const defaultBreakDuration = ref(null)
   const isStartBreakAuto = ref(false)
   const isStartWorkAuto = ref(false)
 

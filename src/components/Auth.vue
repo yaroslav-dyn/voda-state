@@ -184,6 +184,7 @@ export default {
       demoFillLevel,
       isLoading,
       error,
+      isDev,
       signInGostMode: signInGostMode,
       signInWithGoogle: handleSignIn
     }

@@ -4,6 +4,7 @@ export const workPresets = [
   { minutes: 25 },
   { minutes: 30 },
   { minutes: 45 },
+  { minutes: 60 }
 ];
 
 export const breakPresets = [
@@ -11,7 +12,17 @@ export const breakPresets = [
   { minutes: 5 },
   { minutes: 10 },
   { minutes: 15 },
+  { minutes: 30 }
 ];
+
+export const getTimePressets = () => {
+  const prodWorkPressets = workPresets.filter(p => p.minutes !== 1 && p.minutes !== 5)
+  const prodBreakPressets = breakPresets.filter(p => p.minutes !== 1)
+  return {
+    work: import.meta.env.DEV ? workPresets : prodWorkPressets,
+    break: import.meta.env.DEV ? breakPresets : prodBreakPressets,
+  }
+}
 
 export const playCompletionSound = () => {
   // Simple water drop sound using Web Audio API

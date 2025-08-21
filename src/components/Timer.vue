@@ -27,7 +27,7 @@
       <h3 class="pixel-text">Work Sessions</h3>
       <div class="preset-group">
         <button
-          v-for="preset in workPresets"
+          v-for="preset in getTimePressets().work"
           :key="preset.minutes"
           @click="setTimer(preset.minutes * 60, 'work')"
           class="pixel-btn preset-btn"
@@ -44,7 +44,7 @@
       <h3 class="pixel-text">Break Sessions</h3>
       <div class="preset-group">
         <button
-          v-for="preset in breakPresets"
+          v-for="preset in getTimePressets().break"
           :key="preset.minutes"
           @click="setTimer(preset.minutes * 60, 'break')"
           class="pixel-btn preset-btn break-btn"
@@ -115,7 +115,7 @@ import {
 } from "vue";
 import { storeToRefs } from "pinia";
 import { useTimer } from "../composables/useTimer";
-import { workPresets, breakPresets } from "../utils";
+import { workPresets, breakPresets, getTimePressets } from "../utils";
 import { useSettingsStore } from "../stores";
 
 const emit = defineEmits([
@@ -215,11 +215,11 @@ const checkSessionCompletion = () => {
     // Play completion sound (if enabled)
     playCompletionSound();
 
-    if (isStartBreakAuto && sessionType.value === "work") {
+    if (isStartBreakAuto.value && sessionType.value === "work") {
       stopTimer();
       setTimer(defaultBreakDuration.value, 'break')
       startTimer('break');
-    } else if (isStartWorkAuto && sessionType.value === "break") {
+    } else if (isStartWorkAuto.value && sessionType.value === "break") {
       stopTimer();
       setTimer(defaultWorkDuration.value, 'work')
       startTimer('work');
@@ -257,6 +257,8 @@ const playCompletionSound = () => {
 const completionInterval = setInterval(checkSessionCompletion, 1000);
 
 onMounted(()=> {
+  console.log('getTimePressets', getTimePressets);
+  
   setDefaultTimers(defaultWorkDuration, defaultBreakDuration)
 })
 
