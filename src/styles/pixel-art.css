@@ -291,7 +291,6 @@
 .app-title-large {
   font-size: 2rem;
   margin-bottom: 0.5rem;
-  color: var(--primary-blue);
 }
 
 .tagline {
@@ -584,16 +583,25 @@
   font-size: 0.625rem;
 }
 
-/* Responsive adjustments */
+/*SECTION: Responsive adjustments */
 @media (max-width: 768px) {
   .features-grid {
     grid-template-columns: 1fr;
+    margin-bottom: 0;
   }
 
   .quick-stats {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  .auth-section {
+    padding: 1rem 0;
+  }
 
+  .landing-section {
+    padding: 1rem 0;
+  }
+  
   .auth-card {
     margin: 1rem;
   }

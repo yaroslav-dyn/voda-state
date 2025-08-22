@@ -1,5 +1,5 @@
 <template>
-  <div class="timer-container">
+  <div class="timer-container --invert-bg">
     <!-- Timer Display -->
     <div class="timer-display">
       <div class="time-remaining pixel-text">
@@ -7,11 +7,17 @@
       </div>
       <div class="session-info">
         <div class="session-type pixel-text">
-          <div class="session-type__item" v-if="isWorkTypeLabel">
+          <div
+            class="session-type__item"
+            v-if="isWorkTypeLabel"
+          >
             <span class="session-type__icon">💼</span>
             <span>Work Time</span>
           </div>
-          <div class="session-type__item" v-else>
+          <div
+            class="session-type__item"
+            v-else
+          >
             <span class="session-type__icon">☕</span>
             <span>Break Time</span>
           </div>
@@ -23,7 +29,10 @@
     </div>
 
     <!-- Timer Presets -->
-    <div class="timer-presets" v-if="!isActive">
+    <div
+      class="timer-presets"
+      v-if="!isActive"
+    >
       <h3 class="pixel-text">Work Sessions</h3>
       <div class="preset-group">
         <button
@@ -85,18 +94,27 @@
         >
           ▶️ Resume
         </button>
-        <button @click="stopTimer" class="pixel-btn control-btn stop-btn">
+        <button
+          @click="stopTimer"
+          class="pixel-btn control-btn stop-btn"
+        >
           🛑 Stop
         </button>
       </template>
 
-      <button @click="resetTimer" class="pixel-btn control-btn reset-btn">
+      <button
+        @click="resetTimer"
+        class="pixel-btn control-btn reset-btn"
+      >
         🔄 Reset
       </button>
     </div>
 
     <!-- Progress Bar -->
-    <div class="progress-container" v-if="selectedDuration">
+    <div
+      class="progress-container"
+      v-if="selectedDuration"
+    >
       <div class="progress-bar">
         <div
           class="progress-fill"

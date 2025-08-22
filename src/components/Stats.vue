@@ -5,7 +5,7 @@
     <!-- Quick Stats -->
     <div class="quick-stats">
       <div class="stat-card">
-        <div class="stat-number pixel-text">{{ todaysSessions }}</div>
+        <div class="stat-number pixel-text ">{{ todaysSessions }}</div>
         <div class="stat-label pixel-text">Today</div>
       </div>
 
@@ -37,12 +37,12 @@
             v-for="n in 5"
             :key="n"
             class="goal-bottle"
-            :class="{ 'completed': n <= todaysSessions }"
+            :class="{ completed: n <= todaysSessions }"
           >
             🍶
           </div>
         </div>
-        <div class="goal-text pixel-text">
+        <div class="goal-text pixel-text --night-invert">
           {{ todaysSessions }}/5 sessions completed today
         </div>
       </div>
@@ -58,21 +58,21 @@
           v-for="session in recentSessions"
           :key="session.id"
           class="session-item"
-          :class="{ 'completed': session.completed }"
+          :class="{ completed: session.completed }"
         >
           <div class="session-icon">
-            {{ session.type === 'work' ? '💼' : '☕' }}
+            {{ session.type === "work" ? "💼" : "☕" }}
           </div>
           <div class="session-details">
-            <div class="session-duration pixel-text">
+            <div class="session-duration pixel-text --night-invert">
               {{ formatDuration(session.duration) }}
             </div>
-            <div class="session-date pixel-text">
+            <div class="session-date pixel-text --night-invert">
               {{ formatDate(session.completedAt) }}
             </div>
           </div>
           <div class="session-status">
-            {{ session.completed ? '✅' : '❌' }}
+            {{ session.completed ? "✅" : "❌" }}
           </div>
         </div>
       </div>
@@ -89,8 +89,12 @@
         >
           <div class="achievement-icon">{{ achievement.icon }}</div>
           <div class="achievement-info">
-            <div class="achievement-title pixel-text">{{ achievement.title }}</div>
-            <div class="achievement-description pixel-text">{{ achievement.description }}</div>
+            <div class="achievement-title pixel-text --night-invert">
+              {{ achievement.title }}
+            </div>
+            <div class="achievement-description pixel-text --night-invert">
+              {{ achievement.description }}
+            </div>
           </div>
         </div>
       </div>
@@ -99,13 +103,15 @@
     <!-- Empty State -->
     <div class="empty-state" v-if="totalSessions === 0">
       <div class="empty-icon">🌱</div>
-      <p class="pixel-text">Start your first session to begin tracking your productivity journey!</p>
+      <p class="pixel-text">
+        Start your first session to begin tracking your productivity journey!
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
 
 const props = defineProps({
   sessions: Array,
