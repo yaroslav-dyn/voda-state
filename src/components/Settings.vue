@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="['settings-modal-wrapper', { open: isSettingsOpen }]"
+    :class="['settings-modal-wrapper --invert-bg', { open: isSettingsOpen }]"
     @click.self="closeModal"
   >
     <div

@@ -2,7 +2,7 @@
   <div class="auth-container">
     <!-- Landing Section -->
     <div class="landing-section">
-      <h1 class="pixel-text app-title-large">💧 VodaState</h1>
+      <h1 class="pixel-text app-title-large --text-modern-dark">VodaState</h1>
       <p class="pixel-text tagline">Stay hydrated, stay focused</p>
 
       <!-- Demo Bottle -->
@@ -31,7 +31,7 @@
           <div class="feature-icon">⏱️</div>
           <div class="feature-text pixel-text">
             <strong>Pomodoro Timer</strong><br>
-            25, 30, 45 min sessions
+            25, 30, 45, 60 min sessions
           </div>
         </div>
 
