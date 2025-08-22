@@ -1,6 +1,20 @@
 import { ref } from 'vue'
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_URL = import.meta.env.VITE_APP_SUPABASE_URL
+const SUPABASE_KEY = import.meta.env.VITE_APP_SUPABASE_KEY
+const SUPABASE_CALLBACK_URL = import.meta.env.VITE_APP_SUPABASE_CALLBACK_URL
+
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 export function useSupabase() {
+
+
+  const getSupabaseInstance = async () => {
+    return supabase;
+  }
+
   const user = ref(null)
   const isLoading = ref(false)
 
@@ -24,6 +38,16 @@ export function useSupabase() {
     
     // Store in localStorage for persistence
     localStorage.setItem('vodastate_user', JSON.stringify(user.value))
+  }
+
+  const handleSignInWithGoogle = async(response) => {
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: SUPABASE_CALLBACK_URL
+      },
+    })
+    return {data, error}
   }
 
   const signOut = async () => {
@@ -69,6 +93,7 @@ export function useSupabase() {
     initializeAuth()
 
   return {
+    getSupabaseInstance,
     user,
     isLoading,
     signInWithGoogle,

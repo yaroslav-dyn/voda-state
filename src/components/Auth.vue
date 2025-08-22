@@ -120,6 +120,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '../stores/user'
 import { storeToRefs } from 'pinia';
+import { useSupabase } from '../composables/useSupabase';
 
 export default {
   name: 'Auth',
@@ -128,6 +129,8 @@ export default {
     const userStore = useUserStore()
     const signInGostMode = userStore?.signInGostMode
     const { user } = storeToRefs(userStore)
+
+    const { getSupabaseInstance } = useSupabase();
 
     const isDev = ref(import.meta.env.DEV)
       
@@ -170,7 +173,7 @@ export default {
       }
     }
 
-    onMounted(() => {
+    onMounted(async() => {
       startDemoAnimation()
     })
 
