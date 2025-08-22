@@ -1,17 +1,27 @@
 <template>
-  <div id="app" :class="themeClass">
+  <div
+    id="app"
+    :class="themeClass"
+  >
     <div class="app-container">
       <!--SECTION: Header -->
       <header class="app-header">
         <div class="app-header__logo">
-          <img class="d_logo" :src="dropLogo" :alt="appName" />
-          <h1 class="app-title pixel-text">{{ appName }}</h1>
+          <img
+            class="d_logo"
+            :src="dropLogo"
+            :alt="appName"
+          />
+          <h1 class="app-title pixel-text --text-primary-blue isolated-color">{{ appName }}</h1>
         </div>
         <div
           :class="['user-info', { '--ghost-user': ghostUser }]"
           v-if="!isLoading && (user || ghostUser)"
         >
-          <span v-if="!ghostUser" class="user-info__nick pixel-text">{{
+          <span
+            v-if="!ghostUser"
+            class="user-info__nick pixel-text"
+          >{{
             user.email
           }}</span>
           <button
@@ -32,23 +42,29 @@
             @click="openSettigns"
             class="user-info__settings plane-btn settings-icon"
           >
-            <span class="icon_emoji --x-big --bold">⛭</span>
+            <span class="icon_emoji --x-big --bold --text-modern-dark --night-invert">⛭</span>
           </button>
         </div>
       </header>
 
       <!--SECTION: Main Content -->
       <main class="main-content">
-        <Auth v-if="!user && !ghostUser" @user-authenticated="handleUserAuth" />
+        <Auth
+          v-if="!user && !ghostUser"
+          @user-authenticated="handleUserAuth"
+        />
 
-        <div v-else-if="!isLoading" class="app-dashboard">
+        <div
+          v-else-if="!isLoading"
+          class="app-dashboard"
+        >
           <!-- Motivation Message -->
-          <div class="motivation-message">
+          <div class="motivation-message --invert-bg">
             <p class="pixel-text motivation-text">{{ currentMessage }}</p>
           </div>
 
           <!-- Timer Section -->
-          <section class="timer-section">
+          <section class="timer-sectiong">
             <Timer
               @session-complete="handleSessionComplete"
               @session-start="handleSessionStart"
@@ -80,7 +96,10 @@
       </Transition>
 
       <!--SECTION: Water Drop Animations -->
-      <section class="water-drops" v-if="showDrops">
+      <section
+        class="water-drops"
+        v-if="showDrops"
+      >
         <div
           class="water-drop"
           v-for="n in 3"
