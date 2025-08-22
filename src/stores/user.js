@@ -34,7 +34,6 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('vodastate_user', JSON.stringify(user.value))
   }
 
-  handleSignInWithGoogle
 
   function signInGostMode () {
     ghostUser.value = true;

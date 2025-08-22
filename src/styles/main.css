@@ -102,7 +102,7 @@ body {
     flex-wrap: wrap;
     justify-content: space-between;
   }
-  
+
   .user-info.--ghost-user {
     width: 100%;
   }
@@ -115,13 +115,15 @@ body {
     flex-basis: 80%;
     order: 0;
   }
+
   .user-info__settings {
     order: 1;
   }
+
   .user-info__button {
     order: 2;
   }
-  
+
 }
 
 /* Main content layout */
@@ -224,6 +226,19 @@ body {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   font-size: 10px;
+  width: 100%;
+  margin-bottom: 1rem;
+  color: white;
+  border: none;
+}
+
+.auth-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .auth-btn__inner span {
@@ -556,6 +571,7 @@ body {
 .icon_emoji.--big {
   font-size: 2rem;
 }
+
 .icon_emoji.--x-big {
   font-size: 2.6rem;
 }
@@ -567,6 +583,7 @@ body {
 .settings-icon:hover {
   transform: translateY(-2px);
 }
+
 .icon_emoji.--red {
   -webkit-text-fill-color: transparent;
   background-clip: text;
