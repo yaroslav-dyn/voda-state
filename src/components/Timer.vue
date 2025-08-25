@@ -180,8 +180,11 @@ const progressPercentage = computed(() => {
   const timerPersentValue =
     ((selectedDuration.value - timeRemaining.value) / selectedDuration.value) *
     100;
-  if (Math.round(timerPersentValue % 5 === 0) && isActive.value) {
+  if (Math.round(timerPersentValue % 5 === 0)) {
     emit("progress-update", timerPersentValue);
+  }
+  if(timerPersentValue > 98 && isActive.value) {
+    checkSessionCompletion()
   }
   return timerPersentValue;
 });
@@ -221,7 +224,9 @@ const setTimer = (duration, type) => {
 
 // Watch for session completion
 const checkSessionCompletion = () => {
-  if (timeRemaining.value === 0 && isActive.value) {
+  console.log('[c], complete ses', timeRemaining.value, isActive.value)
+  if (timeRemaining.value <= 1 && isActive.value) {
+
     const sessionData = {
       type: sessionType.value,
       duration: selectedDuration.value,
@@ -272,13 +277,13 @@ const playCompletionSound = () => {
 };
 
 // Set up interval to check for completion
-const completionInterval = setInterval(checkSessionCompletion, 1000);
+// const completionInterval = setInterval(checkSessionCompletion, 1000);
 
 onMounted(()=> {
   setDefaultTimers(defaultWorkDuration, defaultBreakDuration)
 })
 
 onUnmounted(() => {
-  clearInterval(completionInterval);
+  // clearInterval(completionInterval);
 });
 </script>
