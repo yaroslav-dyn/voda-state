@@ -78,7 +78,8 @@
           <span v-else>⏳ Signing in...</span>
         </button>
 
-        <button
+        <!--TODO: Next implementation -->
+        <!-- <button
           @click="signInWithGoogle"
           :disabled="isLoading || !isDev"
           class="pixel-btn auth-btn google-btn"
@@ -90,7 +91,7 @@
             >
           </div>
           <span v-else>⏳ Signing in...</span>
-        </button>
+        </button> -->
 
         <button
           @click="signInGostMode"
@@ -137,7 +138,6 @@ const emit = defineEmits(["user-authenticated"]);
 const userStore = useUserStore();
 const signInGostMode = userStore?.signInGostMode;
 const { user } = storeToRefs(userStore);
-const { getSupabaseInstance } = useSupabase();
 const isDev = ref(import.meta.env.DEV);
 const signInWithGoogle = userStore.signInWithGoogle;
 const isLoading = ref(false);
@@ -178,11 +178,11 @@ const handleSignIn = async () => {
 };
 
 const signInWithEmail = () => {
-  showSignInModal.value = true;
+  showSignInModal.value = !showSignInModal.value;
 };
 
 onMounted(async () => {
-  startDemoAnimation();
+  startDemoAnimation()
 });
 
 onUnmounted(() => {

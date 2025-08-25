@@ -80,6 +80,7 @@ export default {
     
     const fillMessage = computed(() => {
       const fill = props.fillPercentage
+      console.log("🚀 ~ setup ~ fill:", fill)
       if (fill === 0) return ''
       if (fill < 25) return '💧 Starting to fill up!'
       if (fill < 50) return '🌊 Good flow going!'

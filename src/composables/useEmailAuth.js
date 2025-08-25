@@ -1,12 +1,12 @@
 
 
-// 3. Auth composable (composables/useAuth.js)
 import { ref, computed, onMounted } from 'vue'
-import { supabase } from '../utils/supabaseClient'
+import { useSupabase } from './useSupabase'
 
 export const useAuth = () => {
+  const { supabase } = useSupabase()
   const user = ref(null)
-  const loading = ref(true)
+  const loading = ref(false)
   const error = ref(null)
 
   const isAuthenticated = computed(() => !!user.value)
@@ -39,7 +39,6 @@ export const useAuth = () => {
     try {
       loading.value = true
       error.value = null
-
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -51,29 +50,30 @@ export const useAuth = () => {
       return { success: true, data }
     } catch (err) {
       error.value = err.message
+
       return { success: false, error: err.message }
     } finally {
       loading.value = false
     }
   }
 
-  // Sign out
-  const signOut = async () => {
-    try {
-      loading.value = true
-      const { error: signOutError } = await supabase.auth.signOut()
+  //TODO: DEPRECATED: Sign out
+  // const signOut = async () => {
+  //   try {
+  //     loading.value = true
+  //     const { error: signOutError } = await supabase.auth.signOut()
 
-      if (signOutError) throw signOutError
+  //     if (signOutError) throw signOutError
 
-      user.value = null
-      return { success: true }
-    } catch (err) {
-      error.value = err.message
-      return { success: false, error: err.message }
-    } finally {
-      loading.value = false
-    }
-  }
+  //     user.value = null
+  //     return { success: true }
+  //   } catch (err) {
+  //     error.value = err.message
+  //     return { success: false, error: err.message }
+  //   } finally {
+  //     loading.value = false
+  //   }
+  // }
 
   // Reset password
   const resetPassword = async (email) => {
@@ -96,34 +96,6 @@ export const useAuth = () => {
     }
   }
 
-  // Initialize auth state
-  const initAuth = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      user.value = session?.user ?? null
-
-      // Listen for auth changes
-      supabase.auth.onAuthStateChange((event, session) => {
-        user.value = session?.user ?? null
-
-        if (event === 'SIGNED_IN') {
-          console.log('User signed in:', session.user.email)
-        } else if (event === 'SIGNED_OUT') {
-          console.log('User signed out')
-        }
-      })
-    } catch (err) {
-      console.error('Auth initialization error:', err)
-      error.value = err.message
-    } finally {
-      loading.value = false
-    }
-  }
-
-  onMounted(() => {
-    initAuth()
-  })
-
   return {
     user,
     loading,
@@ -131,8 +103,6 @@ export const useAuth = () => {
     isAuthenticated,
     signUp,
     signIn,
-    signOut,
-    resetPassword,
-    initAuth
+    resetPassword
   }
 }

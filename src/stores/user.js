@@ -1,19 +1,23 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useSupabase } from '../composables/useSupabase'
 
 export const useUserStore = defineStore('user', () => {
   const user = ref(null)
   const ghostUser = ref(false)
   const isLoading = ref(false)
+  const { user: spUser, initializeAuthSpBase, isLoading: spLoading, signOutSpBase } = useSupabase()
 
   // Initialize user from localStorage
-  function initializeAuth() {
-    const savedUser = localStorage.getItem('vodastate_user')
-    if (savedUser) {
-      user.value = JSON.parse(savedUser)
-    }
+  const initializeAuth = () => {
+    initializeAuthSpBase()
   }
 
+  watch([spUser, spLoading], ([val]) => {
+    user.value = val
+  })
+
+  //TODO: Next releases
   async function signInWithGoogle() {
     isLoading.value = true
 
@@ -34,16 +38,18 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('vodastate_user', JSON.stringify(user.value))
   }
 
-
-  function signInGostMode () {
+  function signInGostMode() {
     ghostUser.value = true;
   }
 
   async function signOut() {
+    if (!ghostUser.value) {
+      await signOutSpBase()
+    } else {
+      ghostUser.value = false
+      localStorage.removeItem('vodastate_user')
+    }
     user.value = null
-    ghostUser.value = false
-    localStorage.removeItem('vodastate_user')
-    // localStorage.removeItem('vodastate_sessions')
   }
 
   function getSessions() {
@@ -57,7 +63,9 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function saveSession(sessionData) {
+    console.log('saveSession user', user.value)
     const sessions = getSessions()
+
     const newSession = {
       id: Date.now().toString(),
       userId: user.value?.id,

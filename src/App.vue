@@ -64,7 +64,7 @@
           </div>
 
           <!-- Timer Section -->
-          <section class="timer-sectiong">
+          <section class="timer-section">
             <Timer
               @session-complete="handleSessionComplete"
               @session-start="handleSessionStart"
@@ -190,6 +190,8 @@ const loadUserSessions = async () => {
 // Watch for timer progress updates
 const updateTimerProgress = (progress) => {
   timerProgress.value = progress;
+  console.log("🚀 ~ updateTimerProgress ~ progress:", progress, isTimerActive.value)
+
 
   // Show motivational messages at certain progress points
   if (progress === 25) {

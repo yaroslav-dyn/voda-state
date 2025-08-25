@@ -2,185 +2,209 @@
 <template>
   <div class="auth-container">
     <div class="auth-header">
-      <h2>🌊 Welcome to VodaState</h2>
-      <p>Stay hydrated and focused!</p>
+      <h2 class="pixel-text app-title">Welcome <br /> to {{APP_NAME}}</h2>
+      <p clasds="pixel-text">Stay hydrated and focused!</p>
     </div>
 
     <!-- Login Form -->
-    <form @submit.prevent="handleLogin" v-if="!showSignUp" class="auth-form">
+    <form @submit.prevent="handleLogin" v-if="!showSignUp && !showResetPassword" class="auth-form">
       <div class="input-group">
-        <label>Email</label>
-        <input 
-          type="email" 
-          v-model="loginForm.email" 
-          required 
+        <label class="pixel-text">Email</label>
+        <input
+          type="email"
+          v-model="loginForm.email"
+          required
           :disabled="loading"
           placeholder="your@email.com"
         />
       </div>
-      
+
       <div class="input-group">
-        <label>Password</label>
-        <input 
-          type="password" 
-          v-model="loginForm.password" 
-          required 
+        <label class="pixel-text">Password</label>
+        <input
+          type="password"
+          v-model="loginForm.password"
+          required
           :disabled="loading"
           placeholder="••••••••"
         />
       </div>
-      
-      <button type="submit" class="auth-btn" :disabled="loading">
-        {{ loading ? 'Signing In...' : '🌊 Sign In' }}
+
+      <button type="submit" class="auth-btn pixel-btn" :disabled="loading">
+       <span class="pixel-text"> {{ loading ? "Signing In..." : "Sign In" }}</span>
       </button>
-      
-      <p class="auth-link">
-        Don't have an account? 
+
+      <button
+        @click="emit('on-close')"
+        class="auth-btn --warning pixel-btn pixel-btn-small"
+      >
+       <span class="pixel-text"> Close</span>
+      </button>
+
+      <div class="auth-link pixel-text">
+        <p>Don't have an account?</p> <br />
         <a @click="showSignUp = true">Sign up here</a>
-      </p>
-      
-      <p class="auth-link">
-        <a @click="showResetPassword = true">Forgot password?</a>
+      </div>
+
+      <p class="auth-link pixel-text">
+        <a @click="() => showResetPassword = true">Forgot password?</a>
       </p>
     </form>
 
     <!-- Sign Up Form -->
-    <form @submit.prevent="handleSignUp" v-if="showSignUp" class="auth-form">
+    <form @submit.prevent="handleSignUp" v-if="showSignUp && !showResetPassword" class="auth-form">
+      
       <div class="input-group">
-        <label>Email</label>
-        <input 
-          type="email" 
-          v-model="signUpForm.email" 
-          required 
+        <label class="pixel-text">Email</label>
+        <input
+          type="email"
+          v-model="signUpForm.email"
+          required
           :disabled="loading"
           placeholder="your@email.com"
         />
       </div>
-      
+
       <div class="input-group">
-        <label>Password</label>
-        <input 
-          type="password" 
-          v-model="signUpForm.password" 
-          required 
+        <label class="pixel-text">Password</label>
+        <input
+          type="password"
+          v-model="signUpForm.password"
+          required
           :disabled="loading"
           placeholder="••••••••"
           minlength="6"
         />
       </div>
-      
+
       <div class="input-group">
-        <label>Confirm Password</label>
-        <input 
-          type="password" 
-          v-model="signUpForm.confirmPassword" 
-          required 
+        <label class="pixel-text">Confirm Password</label>
+        <input
+          type="password"
+          v-model="signUpForm.confirmPassword"
+          required
           :disabled="loading"
           placeholder="••••••••"
         />
       </div>
-      
-      <button type="submit" class="auth-btn" :disabled="loading">
-        {{ loading ? 'Creating Account...' : '💧 Create Account' }}
+
+      <button type="submit" class="auth-btn pixel-btn" :disabled="loading">
+        {{ loading ? "Creating Account..." : "💧 Create Account" }}
       </button>
-      
+
       <p class="auth-link">
-        Already have an account? 
+        Already have an account?
         <a @click="showSignUp = false">Sign in here</a>
       </p>
     </form>
 
     <!-- Reset Password Form -->
-    <form @submit.prevent="handleResetPassword" v-if="showResetPassword" class="auth-form">
+    <form
+      @submit.prevent="handleResetPassword"
+      v-if="showResetPassword"
+      class="auth-form"
+    >
       <div class="input-group">
         <label>Email</label>
-        <input 
-          type="email" 
-          v-model="resetForm.email" 
-          required 
+        <input
+          type="email"
+          v-model="resetForm.email"
+          required
           :disabled="loading"
           placeholder="your@email.com"
         />
       </div>
-      
+
       <button type="submit" class="auth-btn" :disabled="loading">
-        {{ loading ? 'Sending...' : '🔄 Reset Password' }}
+        {{ loading ? "Sending..." : "🔄 Reset Password" }}
       </button>
-      
+
       <p class="auth-link">
         <a @click="showResetPassword = false">Back to sign in</a>
       </p>
     </form>
 
     <!-- Error Message -->
-    <div v-if="error" class="error-message">
+    <MessageDisplay v-if="error" type="error" render="static" class="pixel-text">
       {{ error }}
-    </div>
+    </MessageDisplay>
 
     <!-- Success Message -->
-    <div v-if="successMessage" class="success-message">
+    <MessageDisplay v-if="successMessage" type="success" render="static" class="pixel-text">
       {{ successMessage }}
-    </div>
+    </MessageDisplay>
+
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useAuth } from '../composables/useEmailAuth'
+import { ref } from "vue";
+import { useAuth } from "../composables/useEmailAuth";
+import MessageDisplay from "./MessageDisplay.vue";
+const APP_NAME = import.meta.env.VITE_APP_NAME;
+const emit = defineEmits(["on-close"]);
 
-const { loading, error, signIn, signUp, resetPassword } = useAuth()
+const { loading, error, signIn, signUp, resetPassword } = useAuth();
 
-const showSignUp = ref(false)
-const showResetPassword = ref(false)
-const successMessage = ref('')
+const showSignUp = ref(false);
+const showResetPassword = ref(false);
+const successMessage = ref("");
 
 const loginForm = ref({
-  email: '',
-  password: ''
-})
+  email: "",
+  password: "",
+});
 
 const signUpForm = ref({
-  email: '',
-  password: '',
-  confirmPassword: ''
-})
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
 
 const resetForm = ref({
-  email: ''
-})
+  email: "",
+});
 
 const handleLogin = async () => {
-  const result = await signIn(loginForm.value.email, loginForm.value.password)
+  const result = await signIn(loginForm.value.email, loginForm.value.password);
+  console.log("🚀 ~ handleLogin ~ result:", result)
   if (result.success) {
-    successMessage.value = 'Welcome back! Stay hydrated! 🌊'
+    successMessage.value = "Welcome back! Stay hydrated! 🌊";
+    
+    emit('on-cole')
   }
-}
+};
 
 const handleSignUp = async () => {
   if (signUpForm.value.password !== signUpForm.value.confirmPassword) {
-    error.value = 'Passwords do not match'
-    return
+    error.value = "Passwords do not match";
+    return;
   }
-  
-  const result = await signUp(signUpForm.value.email, signUpForm.value.password)
+
+  const result = await signUp(
+    signUpForm.value.email,
+    signUpForm.value.password
+  );
   if (result.success) {
-    successMessage.value = 'Account created! Check your email for confirmation. 📧'
-    showSignUp.value = false
+    successMessage.value =
+      "Account created! Check your email for confirmation. 📧";
+    showSignUp.value = false;
   }
-}
+};
 
 const handleResetPassword = async () => {
-  const result = await resetPassword(resetForm.value.email)
+  const result = await resetPassword(resetForm.value.email);
   if (result.success) {
-    successMessage.value = 'Password reset email sent! Check your inbox. 📬'
-    showResetPassword.value = false
+    successMessage.value = "Password reset email sent! Check your inbox. 📬";
+    showResetPassword.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
 .auth-container {
   position: fixed;
+  z-index: 100;
   top: 0;
   left: 0;
   max-width: 400px;
@@ -189,7 +213,6 @@ const handleResetPassword = async () => {
   background: #f0f8ff;
   border: 2px solid #4a90e2;
   border-radius: 8px;
-  font-family: 'Courier New', monospace;
 }
 
 .auth-header {
@@ -224,7 +247,6 @@ const handleResetPassword = async () => {
   border: 2px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Courier New', monospace;
 }
 
 .input-group input:focus {
@@ -244,9 +266,9 @@ const handleResetPassword = async () => {
   padding: 0.75rem;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Courier New', monospace;
   cursor: pointer;
   transition: background-color 0.2s;
+  margin-bottom: 0;
 }
 
 .auth-btn:hover:not(:disabled) {

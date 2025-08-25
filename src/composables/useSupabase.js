@@ -10,13 +10,33 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 export function useSupabase() {
 
-
-  const getSupabaseInstance = async () => {
-    return supabase;
-  }
-
   const user = ref(null)
   const isLoading = ref(false)
+
+  // Initialize auth state
+  const initializeAuthSpBase = async () => {
+    isLoading.value = true
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      user.value = session?.user ?? null
+
+      // Listen for auth changes
+      supabase.auth.onAuthStateChange((event, session) => {
+        user.value = session?.user ?? null
+
+        if (event === 'SIGNED_IN') {
+          console.log('User signed in:', session.user.email)
+        } else if (event === 'SIGNED_OUT') {
+          console.log('User signed out')
+        }
+      })
+    } catch (err) {
+      console.error('Auth initialization error:', err)
+      error.value = err.message
+    } finally {
+      isLoading.value = false
+    }
+  }
 
   // Mock authentication for development
   // In production, this would integrate with Supabase
@@ -50,19 +70,28 @@ export function useSupabase() {
     return {data, error}
   }
 
-  const signOut = async () => {
-    user.value = null
-    localStorage.removeItem('vodastate_user')
-    localStorage.removeItem('vodastate_sessions')
+  const signOutSpBase = async () => {
+    try {
+      isLoading.value = true
+      const { error: signOutError } = await supabase.auth.signOut()
+      if (signOutError) throw signOutError
+      user.value = null
+      return { success: true }
+    } catch (err) {
+      err.value = err.message
+      return { success: false, error: err.message }
+    } finally {
+      isLoading.value = false
+    }
   }
 
   // Initialize user from localStorage
-  const initializeAuth = () => {
-    const savedUser = localStorage.getItem('vodastate_user')
-    if (savedUser) {
-      user.value = JSON.parse(savedUser)
-    }
-  }
+  // const initializeAuth = () => {
+  //   const savedUser = localStorage.getItem('vodastate_user')
+  //   if (savedUser) {
+  //     user.value = JSON.parse(savedUser)
+  //   }
+  // }
 
   // Session management
   const saveSession = async (sessionData) => {
@@ -90,16 +119,16 @@ export function useSupabase() {
   }
 
   // Initialize on module load
-    initializeAuth()
+  //initializeAuth()
 
   return {
-    getSupabaseInstance,
+    supabase,
     user,
     isLoading,
     signInWithGoogle,
-    signOut,
+    signOutSpBase,
     saveSession,
     getSessions: () => getSessionsByUserId(user.value?.id),
-    initializeAuth
+    initializeAuthSpBase
   }
 }
