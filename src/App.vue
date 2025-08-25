@@ -190,9 +190,7 @@ const loadUserSessions = async () => {
 // Watch for timer progress updates
 const updateTimerProgress = (progress) => {
   timerProgress.value = progress;
-  console.log("🚀 ~ updateTimerProgress ~ progress:", progress, isTimerActive.value)
-
-
+  // console.log("🚀 ~ updateTimerProgress ~ progress:", progress, isTimerActive.value)
   // Show motivational messages at certain progress points
   if (progress === 25) {
     currentMessage.value = getMessage("quarter_progress");

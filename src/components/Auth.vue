@@ -130,7 +130,6 @@
 import { ref, onMounted, onUnmounted, defineEmits } from "vue";
 import { useUserStore } from "../stores/user";
 import { storeToRefs } from "pinia";
-import { useSupabase } from "../composables/useSupabase";
 import SignInForm from "./SignIn.vue";
 
 const emit = defineEmits(["user-authenticated"]);
@@ -139,7 +138,6 @@ const userStore = useUserStore();
 const signInGostMode = userStore?.signInGostMode;
 const { user } = storeToRefs(userStore);
 const isDev = ref(import.meta.env.DEV);
-const signInWithGoogle = userStore.signInWithGoogle;
 const isLoading = ref(false);
 const error = ref("");
 const demoFillLevel = ref(0);
@@ -155,26 +153,6 @@ const startDemoAnimation = () => {
       demoFillLevel.value = 0;
     }
   }, 100);
-};
-
-// Handle Google Sign In
-const handleSignIn = async () => {
-  isLoading.value = true;
-  error.value = "";
-
-  try {
-    await signInWithGoogle();
-
-    // Wait for user to be set
-    if (user) {
-      emit("user-authenticated", user.value);
-    }
-  } catch (err) {
-    console.error("Sign in error:", err);
-    error.value = "Failed to sign in. Please try again.";
-  } finally {
-    isLoading.value = false;
-  }
 };
 
 const signInWithEmail = () => {

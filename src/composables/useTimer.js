@@ -3,8 +3,8 @@ import { useUserStore } from '../stores/user'
 import { storeToRefs } from 'pinia';
 
 export function useTimer() {
-  const userStore = useUserStore()
-  const { user, ghostUser } = storeToRefs(userStore);
+  // const userStore = useUserStore()
+  // const { user, ghostUser } = storeToRefs(userStore);
 
   const timeRemaining = ref(0)
   const selectedDuration = ref(0)
@@ -12,25 +12,37 @@ export function useTimer() {
   const isPaused = ref(false)
   const sessionType = ref('work')
   const sessionCount = ref(0)
-  
+
   let timerInterval = null
+  let startTimestamp = null
+  let endTimestamp = null
+
+  const updateTimeRemaining = () => {
+    const now = Date.now()
+    const diff = Math.round((endTimestamp - now) / 1000)
+    timeRemaining.value = diff > 0 ? diff : 0
+    if (timeRemaining.value === 0) {
+      stopTimer()
+    }
+  }
 
   const startTimer = () => {
     if (timeRemaining.value === selectedDuration.value) {
       sessionCount.value += 1
     } else if (timeRemaining.value === 0) {
-        sessionCount.value += 1
+      sessionCount.value += 1
       timeRemaining.value = selectedDuration.value
-    } 
+    }
     isActive.value = true
     isPaused.value = false
 
-      timerInterval = setInterval(() => {
-      if (timeRemaining.value > 0) {
-        timeRemaining.value -= 1
-      } else {
-        stopTimer()
-      }
+    startTimestamp = Date.now()
+    endTimestamp = startTimestamp + timeRemaining.value * 1000
+
+    updateTimeRemaining()
+
+    timerInterval = setInterval(() => {
+      updateTimeRemaining()
     }, 1000)
   }
 
@@ -40,29 +52,30 @@ export function useTimer() {
       clearInterval(timerInterval)
       timerInterval = null
     }
+    // Adjust timeRemaining based on current time
+    updateTimeRemaining()
   }
 
   const resumeTimer = () => {
     isPaused.value = false
-    
+    startTimestamp = Date.now()
+    endTimestamp = startTimestamp + timeRemaining.value * 1000
+
     timerInterval = setInterval(() => {
-      if (timeRemaining.value > 0) {
-        timeRemaining.value -= 1
-      } else {
-        stopTimer()
-      }
+      updateTimeRemaining()
     }, 1000)
   }
 
   const stopTimer = () => {
     isActive.value = false
     isPaused.value = false
-  
+
     if (timerInterval) {
       clearInterval(timerInterval)
       timerInterval = null
-    } else {
     }
+    startTimestamp = null
+    endTimestamp = null
   }
 
   const resetTimer = () => {
@@ -76,24 +89,22 @@ export function useTimer() {
     if (!isActive.value) {
       selectedDuration.value = duration
       timeRemaining.value = duration
-      sessionType.value = type  
+      sessionType.value = type
     }
   }
 
   const setDefaultTimers = (workDuration, breakDuration) => {
-    console.log("🚀 ~ setDefaultTimers ~ sessionType:", sessionType.value)
     switch (sessionType.value) {
       case 'work':
-       selectedDuration.value = workDuration.value
-       break
-       case 'break':
-      selectedDuration.value = breakDuration.value
-      break
+        selectedDuration.value = workDuration.value
+        break
+      case 'break':
+        selectedDuration.value = breakDuration.value
+        break
       default:
         return undefined
     }
   }
-
 
   // Computed properties
   const progress = computed(() => {
