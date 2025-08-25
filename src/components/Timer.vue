@@ -180,7 +180,7 @@ const progressPercentage = computed(() => {
   const timerPersentValue =
     ((selectedDuration.value - timeRemaining.value) / selectedDuration.value) *
     100;
-  if (Math.round(timerPersentValue % 5 === 0)) {
+  if (Math.round(timerPersentValue % 5 === 0) && isActive.value) {
     emit("progress-update", timerPersentValue);
   }
   return timerPersentValue;

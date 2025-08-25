@@ -1,6 +1,6 @@
 <template>
   <div class="auth-container">
-    <!-- Landing Section -->
+    <!--SECTION: Landing Section -->
     <div class="landing-section">
       <h1 class="pixel-text app-title-large --text-modern-dark">VodaState</h1>
       <p class="pixel-text tagline">Stay hydrated, stay focused</p>
@@ -15,14 +15,12 @@
           ></div>
           <div class="bottle-cap"></div>
           <div class="demo-bubbles">
-            <div
-              class="bubble"
-              v-for="n in 3"
-              :key="n"
-            ></div>
+            <div class="bubble" v-for="n in 3" :key="n"></div>
           </div>
         </div>
-        <p class="pixel-text demo-text">Watch your productivity bottle fill as you focus!</p>
+        <p class="pixel-text demo-text">
+          Watch your productivity bottle fill as you focus!
+        </p>
       </div>
 
       <!-- Features -->
@@ -38,7 +36,7 @@
         <div class="feature-card">
           <div class="feature-icon">🍶</div>
           <div class="feature-text pixel-text">
-            <strong>Visual Progress</strong><br>
+            <strong>Visual Progress</strong><br />
             Pixel art bottle fills with water
           </div>
         </div>
@@ -46,7 +44,7 @@
         <div class="feature-card">
           <div class="feature-icon">📊</div>
           <div class="feature-text pixel-text">
-            <strong>Track Sessions</strong><br>
+            <strong>Track Sessions</strong><br />
             Monitor your productivity streaks
           </div>
         </div>
@@ -54,140 +52,142 @@
         <div class="feature-card">
           <div class="feature-icon">🌙</div>
           <div class="feature-text pixel-text">
-            <strong>Day/Night Themes</strong><br>
+            <strong>Day/Night Themes</strong><br />
             Adapts to your local time
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Authentication Section -->
+    <!--SECTION: Authentication Section -->
     <div class="auth-section">
       <div class="auth-card">
         <h2 class="pixel-text">Ready to get started?</h2>
-        <p class="pixel-text auth-subtitle">Sign in with Google to save your progress</p>
+        <p class="pixel-text auth-subtitle">Sign in to save your progress</p>
 
         <!-- Sign In Button -->
         <button
+          @click="signInWithEmail"
+          :disabled="isLoading || !isDev"
+          class="pixel-btn auth-btn email-btn"
+        >
+          <div class="auth-btn__inner" v-if="!isLoading">
+            <span class="icon_emoji --big">🔐</span>
+            <span> Sign in with Email {{ !isDev ? "Comming soon!" : "" }}</span>
+          </div>
+          <span v-else>⏳ Signing in...</span>
+        </button>
+
+        <!--TODO: Next implementation -->
+        <!-- <button
           @click="signInWithGoogle"
           :disabled="isLoading || !isDev"
           class="pixel-btn auth-btn google-btn"
         >
-          <div
-            class="auth-btn__inner"
-            v-if="!isLoading"
-          >
+          <div class="auth-btn__inner" v-if="!isLoading">
             <span class="icon_emoji --big">🔐</span>
-            <span> Sign in with Google {{ !isDev ? 'Comming soon!' : '' }}</span>
+            <span>
+              Sign in with Google {{ !isDev ? "Comming soon!" : "" }}</span
+            >
           </div>
           <span v-else>⏳ Signing in...</span>
-        </button>
+        </button> -->
 
         <button
           @click="signInGostMode"
           :disabled="isLoading"
           class="pixel-btn auth-btn --warning google-btn"
         >
-          <div
-            class="auth-btn__inner"
-            v-if="!isLoading"
-          >
+          <div class="auth-btn__inner" v-if="!isLoading">
             <span class="icon_emoji --big">👻</span>
-            <span>
-              Continue without session</span>
+            <span> Continue without session</span>
           </div>
           <span v-else>⏳ Signing in...</span>
         </button>
 
         <!-- Privacy Note -->
         <p class="pixel-text privacy-note">
-          We only access your email to create your account. Your session data is private and secure.
+          We only access your email to create your account. Your session data is
+          private and secure.
         </p>
 
         <!-- Error Display -->
-        <div
-          v-if="error"
-          class="error-message pixel-text"
-        >
-          ❌ {{ error }}
-        </div>
+        <div v-if="error" class="error-message pixel-text">❌ {{ error }}</div>
       </div>
     </div>
+
+  <!--SECTION: Auth from -->
+
+    <SignInForm 
+      v-if="showSignInModal"
+      @on-close="signInWithEmail" 
+    />
+
   </div>
 </template>
 
-<script>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useUserStore } from '../stores/user'
-import { storeToRefs } from 'pinia';
+<script setup>
+import { ref, onMounted, onUnmounted, defineEmits } from "vue";
+import { useUserStore } from "../stores/user";
+import { storeToRefs } from "pinia";
+import { useSupabase } from "../composables/useSupabase";
+import SignInForm from "./SignIn.vue";
 
-export default {
-  name: 'Auth',
-  emits: ['user-authenticated'],
-  setup(props, { emit }) {
-    const userStore = useUserStore()
-    const signInGostMode = userStore?.signInGostMode
-    const { user } = storeToRefs(userStore)
+const emit = defineEmits(["user-authenticated"]);
 
-    const isDev = ref(import.meta.env.DEV)
-      
-    const signInWithGoogle = userStore.signInWithGoogle
+const userStore = useUserStore();
+const signInGostMode = userStore?.signInGostMode;
+const { user } = storeToRefs(userStore);
+const isDev = ref(import.meta.env.DEV);
+const signInWithGoogle = userStore.signInWithGoogle;
+const isLoading = ref(false);
+const error = ref("");
+const demoFillLevel = ref(0);
+const showSignInModal = ref(false);
 
-    
-    const isLoading = ref(false)
-    const error = ref('')
-    const demoFillLevel = ref(0)
-    
-    let demoInterval = null
+let demoInterval = null;
 
-    // Demo bottle animation
-    const startDemoAnimation = () => {
-      demoInterval = setInterval(() => {
-        demoFillLevel.value += 2
-        if (demoFillLevel.value >= 100) {
-          demoFillLevel.value = 0
-        }
-      }, 100)
+// Demo bottle animation
+const startDemoAnimation = () => {
+  demoInterval = setInterval(() => {
+    demoFillLevel.value += 2;
+    if (demoFillLevel.value >= 100) {
+      demoFillLevel.value = 0;
     }
+  }, 100);
+};
 
-    // Handle Google Sign In
-    const handleSignIn = async () => {
-      isLoading.value = true
-      error.value = ''
-      
-      try {
-        await signInWithGoogle();
+// Handle Google Sign In
+const handleSignIn = async () => {
+  isLoading.value = true;
+  error.value = "";
 
-        // Wait for user to be set
-        if (user) {
-          emit('user-authenticated', user.value)
-        }
-      } catch (err) {
-        console.error('Sign in error:', err)
-        error.value = 'Failed to sign in. Please try again.'
-      } finally {
-        isLoading.value = false
-      }
+  try {
+    await signInWithGoogle();
+
+    // Wait for user to be set
+    if (user) {
+      emit("user-authenticated", user.value);
     }
-
-    onMounted(() => {
-      startDemoAnimation()
-    })
-
-    onUnmounted(() => {
-      if (demoInterval) {
-        clearInterval(demoInterval)
-      }
-    })
-
-    return {
-      demoFillLevel,
-      isLoading,
-      error,
-      isDev,
-      signInGostMode: signInGostMode,
-      signInWithGoogle: handleSignIn
-    }
+  } catch (err) {
+    console.error("Sign in error:", err);
+    error.value = "Failed to sign in. Please try again.";
+  } finally {
+    isLoading.value = false;
   }
-}
+};
+
+const signInWithEmail = () => {
+  showSignInModal.value = !showSignInModal.value;
+};
+
+onMounted(async () => {
+  startDemoAnimation()
+});
+
+onUnmounted(() => {
+  if (demoInterval) {
+    clearInterval(demoInterval);
+  }
+});
 </script>

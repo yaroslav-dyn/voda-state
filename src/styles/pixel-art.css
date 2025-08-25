@@ -13,7 +13,8 @@
   backdrop-filter: blur(10px);
 }
 
-.bottle, .demo-bottle {
+.bottle,
+.demo-bottle {
   position: relative;
   width: 120px;
   height: 200px;
@@ -29,23 +30,23 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
+  background:
     /* Bottle neck */
     linear-gradient(to right, transparent 40%, #1f2937 40%, #1f2937 43%, transparent 43%),
     linear-gradient(to right, transparent 57%, #1f2937 57%, #1f2937 60%, transparent 60%),
     linear-gradient(to bottom, transparent 0%, transparent 20%, #1f2937 20%, #1f2937 23%, transparent 23%),
-    
+
     /* Bottle body outline */
     linear-gradient(to right, #1f2937 0%, #1f2937 3%, transparent 3%),
     linear-gradient(to right, transparent 97%, #1f2937 97%, #1f2937 100%),
     linear-gradient(to bottom, transparent 97%, #1f2937 97%, #1f2937 100%),
-    
+
     /* Bottle shoulders */
     linear-gradient(to bottom, transparent 23%, #1f2937 23%, #1f2937 26%, transparent 26%),
-    
+
     /* Inner bottle area (transparent for water fill) */
     linear-gradient(to right, transparent 3%, rgba(240, 248, 255, 0.3) 3%, rgba(240, 248, 255, 0.3) 97%, transparent 97%);
-  
+
   background-size: 100% 100%;
   z-index: 3;
 }
@@ -58,7 +59,7 @@
   transform: translateX(-50%);
   width: 30px;
   height: 20px;
-  background: 
+  background:
     /* Cap outline */
     linear-gradient(to right, #1f2937 0%, #1f2937 2px, transparent 2px),
     linear-gradient(to right, transparent calc(100% - 2px), #1f2937 calc(100% - 2px)),
@@ -71,22 +72,22 @@
 }
 
 /* Water fill */
-.water-fill, .demo-water-fill {
+.water-fill,
+.demo-water-fill {
   position: absolute;
   bottom: 3px;
   left: 3px;
   right: 3px;
-  background: 
-    linear-gradient(180deg, 
+  background:
+    linear-gradient(180deg,
       rgba(6, 182, 212, 0.9) 0%,
       rgba(14, 165, 233, 0.9) 50%,
-      rgba(37, 99, 235, 0.9) 100%
-    );
+      rgba(37, 99, 235, 0.9) 100%);
   border-radius: 0 0 2px 2px;
   transition: height 0.5s ease;
   z-index: 1;
   image-rendering: pixelated;
-  
+
   /* Water texture */
   /* background-image: 
     repeating-linear-gradient(
@@ -96,15 +97,18 @@
       rgba(8, 114, 227, 0.1) 4px,
       rgba(8, 114, 227, 0.1) 8px
     ); */
-  
+
   animation: waterShimmer 3s ease-in-out infinite;
 }
 
 @keyframes waterShimmer {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.9;
     filter: hue-rotate(0deg);
   }
+
   50% {
     opacity: 1;
     filter: hue-rotate(10deg);
@@ -123,10 +127,13 @@
 }
 
 @keyframes waterSurface {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.6;
     transform: scaleX(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scaleX(0.98);
@@ -134,7 +141,8 @@
 }
 
 /* Bubbles */
-.bubbles, .demo-bubbles {
+.bubbles,
+.demo-bubbles {
   position: absolute;
   bottom: 10px;
   left: 10px;
@@ -162,10 +170,12 @@
     opacity: 0.7;
     transform: scale(0.5);
   }
+
   50% {
     opacity: 1;
     transform: scale(1);
   }
+
   100% {
     bottom: 100%;
     opacity: 0;
@@ -173,11 +183,30 @@
   }
 }
 
-.bubble:nth-child(1) { --delay: 0s; --x: 20%; }
-.bubble:nth-child(2) { --delay: 0.5s; --x: 50%; }
-.bubble:nth-child(3) { --delay: 1s; --x: 80%; }
-.bubble:nth-child(4) { --delay: 1.5s; --x: 35%; }
-.bubble:nth-child(5) { --delay: 2s; --x: 65%; }
+.bubble:nth-child(1) {
+  --delay: 0s;
+  --x: 20%;
+}
+
+.bubble:nth-child(2) {
+  --delay: 0.5s;
+  --x: 50%;
+}
+
+.bubble:nth-child(3) {
+  --delay: 1s;
+  --x: 80%;
+}
+
+.bubble:nth-child(4) {
+  --delay: 1.5s;
+  --x: 35%;
+}
+
+.bubble:nth-child(5) {
+  --delay: 2s;
+  --x: 65%;
+}
 
 /* Active bottle effects */
 .bottle.active {
@@ -185,9 +214,12 @@
 }
 
 @keyframes bottleGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: drop-shadow(0 0 5px rgba(6, 182, 212, 0.3));
   }
+
   50% {
     filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.5));
   }
@@ -225,9 +257,17 @@
 }
 
 @keyframes demoFill {
-  0% { height: 0%; }
-  50% { height: 80%; }
-  100% { height: 0%; }
+  0% {
+    height: 0%;
+  }
+
+  50% {
+    height: 80%;
+  }
+
+  100% {
+    height: 0%;
+  }
 }
 
 .demo-text {
@@ -318,12 +358,13 @@
   margin-bottom: 2rem;
 }
 
+.email-btn {
+  background-color: var(--primary-blue);
+}
+
 .google-btn {
-  width: 100%;
   background: #4285f4;
   border-color: #4285f4;
-  color: white;
-  margin-bottom: 1rem;
 }
 
 .google-btn:hover {
@@ -408,9 +449,19 @@
 }
 
 @keyframes bottleFill {
-  0% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .goal-text {
@@ -499,9 +550,19 @@
 }
 
 @keyframes achievementUnlock {
-  0% { transform: scale(0.9); opacity: 0; }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .achievement-icon {
@@ -528,7 +589,7 @@
     grid-template-columns: 1fr;
     margin-bottom: 0;
   }
-  
+
   .quick-stats {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -544,12 +605,13 @@
   .auth-card {
     margin: 1rem;
   }
-  
+
   .app-title-large {
     font-size: 1.5rem;
   }
-  
-  .bottle, .demo-bottle {
+
+  .bottle,
+  .demo-bottle {
     width: 100px;
     height: 160px;
   }
@@ -559,12 +621,13 @@
   .quick-stats {
     grid-template-columns: 1fr;
   }
-  
+
   .goal-bottles {
     flex-wrap: wrap;
   }
-  
-  .bottle, .demo-bottle {
+
+  .bottle,
+  .demo-bottle {
     width: 80px;
     height: 130px;
   }
