@@ -167,11 +167,9 @@ const resetForm = ref({
 
 const handleLogin = async () => {
   const result = await signIn(loginForm.value.email, loginForm.value.password);
-  console.log("🚀 ~ handleLogin ~ result:", result)
   if (result.success) {
     successMessage.value = "Welcome back! Stay hydrated! 🌊";
-    
-    emit('on-cole')
+    emit('on-close')
   }
 };
 

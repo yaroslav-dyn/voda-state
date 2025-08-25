@@ -17,27 +17,6 @@ export const useUserStore = defineStore('user', () => {
     user.value = val
   })
 
-  //TODO: Next releases
-  async function signInWithGoogle() {
-    isLoading.value = true
-
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    user.value = null
-    // Mock user data
-    user.value = {
-      id: 'mock-user-id',
-      email: 'user@example.com',
-      name: 'Demo User',
-      avatar: null
-    }
-
-    isLoading.value = false
-
-    // Store in localStorage for persistence
-    localStorage.setItem('vodastate_user', JSON.stringify(user.value))
-  }
-
   function signInGostMode() {
     ghostUser.value = true;
   }
@@ -85,7 +64,6 @@ export const useUserStore = defineStore('user', () => {
     user,
     ghostUser,
     isLoading,
-    signInWithGoogle,
     signInGostMode,
     signOut,
     saveSession,
