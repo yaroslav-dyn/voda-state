@@ -68,12 +68,12 @@
         <!-- Sign In Button -->
         <button
           @click="signInWithEmail"
-          :disabled="isLoading || !isDev"
+          :disabled="isLoading"
           class="pixel-btn auth-btn email-btn"
         >
           <div class="auth-btn__inner" v-if="!isLoading">
             <span class="icon_emoji --big">🔐</span>
-            <span> Sign in with Email {{ !isDev ? "Comming soon!" : "" }}</span>
+            <span> Sign in with Email</span>
           </div>
           <span v-else>⏳ Signing in...</span>
         </button>
