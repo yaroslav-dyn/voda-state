@@ -173,6 +173,10 @@ body {
   gap: 1rem;
 }
 
+.hide__mobile {
+  display: none;
+}
+
 @media (min-width: 768px) {
   .app-dashboard {
     grid-template-columns: 1fr 1fr;
@@ -201,8 +205,13 @@ body {
   .stats-section {
     grid-area: stats;
   }
-}
 
+  .hide__mobile {
+    display: block;
+  }
+
+}
+/*  */
 /* Pixel text styling */
 .pixel-text {
   font-family: var(--pixel-font);

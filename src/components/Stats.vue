@@ -74,7 +74,7 @@
               {{ formatDate(session.completedAt) }}
             </div>
           </div>
-          <div class="pixel-text --night-invert">
+          <div class="pixel-text --night-invert hide__mobile">
             {{ formatLocalDate(session.createdAt) }} - {{ formatLocalDate(session.completedAt) }}
           </div>
           <div class="session-status">

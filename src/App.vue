@@ -110,7 +110,7 @@
     </div>
   </div>
 
-  <footer class="app-footer">
+  <footer :class="['app-footer', themeClass]">
     <small class="pixel-text">© 2025 {{appName}}. {{version}}v</small>
   </footer>
 </template>
@@ -219,7 +219,6 @@ watchEffect(async () => {
   text-align: center;
   padding: 1rem 0;
   font-size: 0.875rem;
-  color: var(--text-secondary);
   border-top: 1px solid var(--border-color);
   background-color: transparent;
 }
