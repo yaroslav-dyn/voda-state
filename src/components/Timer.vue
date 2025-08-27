@@ -130,6 +130,7 @@ import {
   computed,
   onUnmounted,
   onMounted,
+  watch,
 } from "vue";
 import { storeToRefs } from "pinia";
 import { useTimer } from "../composables/useTimer";
@@ -155,7 +156,9 @@ const {
   stopTimer: stop,
   resetTimer: reset,
   setTimer: setDuration,
-  setDefaultTimers
+  setDefaultTimers,
+  startTimestamp,
+  endTimestamp
 } = useTimer();
 
 const settingsStore = useSettingsStore();
@@ -182,9 +185,6 @@ const progressPercentage = computed(() => {
     100;
   if (Math.round(timerPersentValue % 5 === 0)) {
     emit("progress-update", timerPersentValue);
-  }
-  if (timerPersentValue > 98 && isActive.value) {
-    checkSessionCompletion()
   }
   return timerPersentValue;
 });
@@ -222,34 +222,38 @@ const setTimer = (duration, type) => {
   setDuration(duration, type);
 };
 
+watch([timeRemaining, isActive], ([rTime, sActive]) => {
+  if (rTime <= 1 && isActive.value) {
+    checkSessionCompletion()
+  }
+})
+
 // Watch for session completion
 const checkSessionCompletion = () => {
-  console.log('[c], complete ses', timeRemaining.value, isActive.value)
-  if (timeRemaining.value <= 1 && isActive.value) {
 
     const sessionData = {
       type: sessionType.value,
       duration: selectedDuration.value,
       completed: true,
-      completedAt: new Date().toISOString(),
+      createdAt: startTimestamp.value,
+      completedAt: endTimestamp.value,
     };
     emit("session-complete", sessionData);
-
+    console.log('[c], complete ses', timeRemaining.value, isActive.value, sessionData)
     // Play completion sound (if enabled)
     playCompletionSound();
 
     if (isStartBreakAuto.value && sessionType.value === "work") {
-      stopTimer(true);
+      stop();
       setTimer(defaultBreakDuration.value, 'break')
       startTimer('break');
     } else if (isStartWorkAuto.value && sessionType.value === "break") {
-      stopTimer(true);
+      stop();
       setTimer(defaultWorkDuration.value, 'work')
       startTimer('work');
     }
-
-  }
 };
+
 
 const playCompletionSound = () => {
   // Simple water drop sound using Web Audio API

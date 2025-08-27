@@ -49,7 +49,7 @@ export const useUserStore = defineStore('user', () => {
       id: Date.now().toString(),
       userId: user.value?.id,
       ...sessionData,
-      createdAt: new Date().toISOString()
+      // createdAt: new Date().toISOString()
     }
 
     sessions.push(newSession)

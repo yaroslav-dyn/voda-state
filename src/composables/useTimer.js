@@ -1,10 +1,6 @@
 import { ref, computed, onMounted, watch } from 'vue'
-import { useUserStore } from '../stores/user'
-import { storeToRefs } from 'pinia';
 
 export function useTimer() {
-  // const userStore = useUserStore()
-  // const { user, ghostUser } = storeToRefs(userStore);
 
   const timeRemaining = ref(0)
   const selectedDuration = ref(0)
@@ -14,12 +10,12 @@ export function useTimer() {
   const sessionCount = ref(0)
 
   let timerInterval = null
-  let startTimestamp = null
-  let endTimestamp = null
+  const startTimestamp = ref(null)
+  const endTimestamp = ref(null)
 
   const updateTimeRemaining = () => {
     const now = Date.now()
-    const diff = Math.round((endTimestamp - now) / 1000)
+    const diff = Math.round((endTimestamp.value - now) / 1000)
     timeRemaining.value = diff > 0 ? diff : 0
     if (timeRemaining.value === 0) {
       stopTimer()
@@ -36,8 +32,8 @@ export function useTimer() {
     isActive.value = true
     isPaused.value = false
 
-    startTimestamp = Date.now()
-    endTimestamp = startTimestamp + timeRemaining.value * 1000
+    startTimestamp.value = Date.now()
+    endTimestamp.value = startTimestamp.value + timeRemaining.value * 1000
 
     updateTimeRemaining()
 
@@ -58,8 +54,8 @@ export function useTimer() {
 
   const resumeTimer = () => {
     isPaused.value = false
-    startTimestamp = Date.now()
-    endTimestamp = startTimestamp + timeRemaining.value * 1000
+    startTimestamp.value = Date.now()
+    endTimestamp.value = startTimestamp.value + timeRemaining.value * 1000
 
     timerInterval = setInterval(() => {
       updateTimeRemaining()
@@ -74,8 +70,8 @@ export function useTimer() {
       clearInterval(timerInterval)
       timerInterval = null
     }
-    startTimestamp = null
-    endTimestamp = null
+    startTimestamp.value = null
+    endTimestamp.value = null
   }
 
   const resetTimer = () => {
@@ -126,6 +122,8 @@ export function useTimer() {
     stopTimer,
     resetTimer,
     setTimer,
-    setDefaultTimers
+    setDefaultTimers,
+    startTimestamp,
+    endTimestamp
   }
 }

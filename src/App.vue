@@ -109,6 +109,10 @@
       </section>
     </div>
   </div>
+
+  <footer class="app-footer">
+    <small class="pixel-text">© 2025 {{appName}}. {{version}}v</small>
+  </footer>
 </template>
 
 <script setup>
@@ -123,6 +127,7 @@ import { useUserStore } from "./stores";
 import { storeToRefs } from "pinia";
 import dropLogo from "/img/drop_timer_512px.png";
 import Settings from "./components/Settings.vue";
+import { version } from '../package.json';
 
 const APP_NAME = import.meta.env.VITE_APP_NAME;
 
@@ -171,7 +176,6 @@ const handleSessionComplete = async (sessionData) => {
   timerProgress.value = 0;
 
   currentMessage.value = getMessage("session_complete", sessionData.type);
-  console.log("##handleSessionComplete", showDrops.value);
   // Save to database
   await saveSession(sessionData);
   await loadUserSessions();
@@ -209,3 +213,17 @@ watchEffect(async () => {
   await loadUserSessions();
 });
 </script>
+
+<style scoped>
+.app-footer {
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-color);
+  background-color: transparent;
+}
+.app-footer small {
+  font-size: 0.65rem;
+}
+</style>

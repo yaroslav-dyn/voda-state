@@ -49,7 +49,10 @@
     </div>
 
     <!-- Recent Sessions -->
-    <div class="recent-sessions" v-if="recentSessions.length > 0">
+    <div
+      class="recent-sessions"
+      v-if="recentSessions.length > 0"
+    >
       <h3 class="pixel-text">
         <span class="icon_emoji">🕐</span> Recent Sessions
       </h3>
@@ -71,6 +74,9 @@
               {{ formatDate(session.completedAt) }}
             </div>
           </div>
+          <div class="pixel-text --night-invert">
+            {{ formatLocalDate(session.createdAt) }} - {{ formatLocalDate(session.completedAt) }}
+          </div>
           <div class="session-status">
             {{ session.completed ? "✅" : "❌" }}
           </div>
@@ -79,7 +85,10 @@
     </div>
 
     <!-- Achievement System -->
-    <div class="achievements" v-if="unlockedAchievements.length > 0">
+    <div
+      class="achievements"
+      v-if="unlockedAchievements.length > 0"
+    >
       <h3 class="pixel-text">🏆 Achievements</h3>
       <div class="achievement-list">
         <div
@@ -101,7 +110,10 @@
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" v-if="totalSessions === 0">
+    <div
+      class="empty-state"
+      v-if="totalSessions === 0"
+    >
       <div class="empty-icon">🌱</div>
       <p class="pixel-text">
         Start your first session to begin tracking your productivity journey!
@@ -114,8 +126,12 @@
 import { computed } from "vue";
 
 const props = defineProps({
-  sessions: Array,
-});
+  sessions: Array
+})
+
+function formatLocalDate(dateString) {
+  return new Date(dateString).toLocaleTimeString()
+}
 
 // Calculate today's sessions
 const todaysSessions = computed(() => {

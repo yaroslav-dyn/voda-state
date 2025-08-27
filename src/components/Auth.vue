@@ -127,7 +127,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, defineEmits } from "vue";
+import { ref, onMounted, onUnmounted} from "vue";
 import { useUserStore } from "../stores/user";
 import { storeToRefs } from "pinia";
 import SignInForm from "./SignIn.vue";
