@@ -95,7 +95,7 @@
           ▶️ Resume
         </button>
         <button
-          @click="stopTimer"
+          @click="()=> stopTimer(undefined)"
           class="pixel-btn control-btn stop-btn"
         >
           🛑 Stop
@@ -183,7 +183,7 @@ const progressPercentage = computed(() => {
   if (Math.round(timerPersentValue % 5 === 0)) {
     emit("progress-update", timerPersentValue);
   }
-  if(timerPersentValue > 98 && isActive.value) {
+  if (timerPersentValue > 98 && isActive.value) {
     checkSessionCompletion()
   }
   return timerPersentValue;
@@ -203,11 +203,11 @@ const resumeTimer = () => {
   resume();
 };
 
-const stopTimer = () => {
+const stopTimer = (isComplete) => {
   const sessionData = {
     type: sessionType.value,
     duration: selectedDuration.value,
-    completed: false,
+    completed: isComplete ?? false,
     completedAt: new Date().toISOString(),
   };
   stop();
@@ -239,11 +239,11 @@ const checkSessionCompletion = () => {
     playCompletionSound();
 
     if (isStartBreakAuto.value && sessionType.value === "work") {
-      stopTimer();
+      stopTimer(true);
       setTimer(defaultBreakDuration.value, 'break')
       startTimer('break');
     } else if (isStartWorkAuto.value && sessionType.value === "break") {
-      stopTimer();
+      stopTimer(true);
       setTimer(defaultWorkDuration.value, 'work')
       startTimer('work');
     }

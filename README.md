@@ -1,6 +1,6 @@
-# HydroFocus
+# VodaState
 
-HydroFocus is a water-themed productivity web application designed to help users manage their time effectively using a unique drop timer concept. The app encourages focused work sessions with motivational features and progress tracking, all wrapped in a clean, intuitive interface.
+VodaState is a water-themed productivity web application designed to help users manage their time effectively using a unique drop timer concept. The app encourages focused work sessions with motivational features and progress tracking, all wrapped in a clean, intuitive interface.
 
 ## Features
 
@@ -28,6 +28,7 @@ HydroFocus is a water-themed productivity web application designed to help users
 - Yarn package manager
 
 ### LInk to github: [https://github.com/yaroslav-dyn/voda-state.git]()
+### LInk to app: [https://dev-vodastate.vercel.app/]()
 
 ### Installation
 
@@ -35,7 +36,7 @@ HydroFocus is a water-themed productivity web application designed to help users
 
    ```bash
    git clone git@github.com:yaroslav-dyn/voda-state.git
-   cd HydroFocus
+   cd voda-state
    ```
 
 2. Install dependencies:
@@ -52,13 +53,12 @@ HydroFocus is a water-themed productivity web application designed to help users
    yarn dev
    ```
 
-5. Open your browser and navigate to `http://localhost:5001` to start using HydroFocus.
+5. Open your browser and navigate to `http://localhost:5001` to start using VodaState.
 
 ## Project Structure
 
 - `src/` - Source code including components, composables, stores, styles, and utilities.
 - `public/` - Static assets and PWA manifest.
-- `attached_assets/` - Additional assets related to the project.
 - `README.md` - This file.
 - `package.json` - Project metadata and scripts.
 - `vite.config.js` - Vite configuration.
