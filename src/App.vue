@@ -24,26 +24,32 @@
           >{{
             user.email
           }}</span>
-          <button
-            v-if="user"
-            @click="signOut"
-            class="user-info__button pixel-btn pixel-btn-small"
-          >
-            Sign Out
-          </button>
-          <button
-            v-if="ghostUser"
-            @click="signOut"
-            :class="['user-info__button pixel-btn pixel-btn-small']"
-          >
-            Exit
-          </button>
-          <button
-            @click="openSettigns"
-            class="user-info__settings plane-btn settings-icon"
-          >
-            <span class="icon_emoji --x-big --bold --text-modern-dark --night-invert">⛭</span>
-          </button>
+
+          <div class="user-info__mbottom">
+            <button
+              v-if="user"
+              @click="signOut"
+              class="user-info__button pixel-btn pixel-btn-small"
+            >
+              Sign Out
+            </button>
+
+            <button
+              v-if="ghostUser"
+              @click="signOut"
+              :class="['user-info__button pixel-btn pixel-btn-small']"
+            >
+              Exit
+            </button>
+
+            <button
+              @click="openSettigns"
+              class="user-info__settings plane-btn settings-icon"
+            >
+              <span class="icon_emoji --x-big --bold --text-modern-dark --night-invert">⛭</span>
+            </button>
+          </div>
+
         </div>
       </header>
 
@@ -111,7 +117,7 @@
   </div>
 
   <footer :class="['app-footer', themeClass]">
-    <small class="pixel-text">© 2025 {{appName}}. {{version}}v</small>
+    <small class="pixel-text">© 2025 {{ appName }}. {{ version }}v</small>
   </footer>
 </template>
 
@@ -222,6 +228,7 @@ watchEffect(async () => {
   border-top: 1px solid var(--border-color);
   background-color: transparent;
 }
+
 .app-footer small {
   font-size: 0.65rem;
 }

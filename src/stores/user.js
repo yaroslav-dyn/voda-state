@@ -42,7 +42,6 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function saveSession(sessionData) {
-    console.log('saveSession user', user.value)
     const sessions = getSessions()
 
     const newSession = {

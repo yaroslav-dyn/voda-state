@@ -1,6 +1,6 @@
 {
   "name": "voda-state",
-  "version": "1.0.8.1",
+  "version": "1.0.8.2",
   "main": "vite.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
