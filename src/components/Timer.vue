@@ -85,20 +85,20 @@
           v-if="!isPaused"
           class="pixel-btn control-btn pause-btn"
         >
-          ⏸️ Pause
+        <span>⏸️</span> <span>Pause</span>
         </button>
         <button
           @click="resumeTimer"
           v-else
           class="pixel-btn control-btn resume-btn"
         >
-          ▶️ Resume
+          <span>▶️</span> <span>Resume</span>
         </button>
         <button
           @click="()=> stopTimer(undefined)"
           class="pixel-btn control-btn stop-btn"
         >
-          🛑 Stop
+          <span>🛑</span> <span>Stop</span>
         </button>
       </template>
 
@@ -106,7 +106,7 @@
         @click="resetTimer"
         class="pixel-btn control-btn reset-btn"
       >
-        🔄 Reset
+        <span>🔄</span> <span>Reset</span>
       </button>
     </div>
 
@@ -131,10 +131,11 @@ import {
   onUnmounted,
   onMounted,
   watch,
+  ref
 } from "vue";
 import { storeToRefs } from "pinia";
 import { useTimer } from "../composables/useTimer";
-import { workPresets, breakPresets, getTimePressets } from "../utils";
+import { workPresets, breakPresets, getTimePressets, playCompletionSound } from "../utils";
 import { useSettingsStore } from "../stores";
 
 const emit = defineEmits([
@@ -165,6 +166,8 @@ const settingsStore = useSettingsStore();
 const { defaultWorkDuration, defaultBreakDuration, isStartBreakAuto, isStartWorkAuto  } = storeToRefs(
   settingsStore
 );
+
+const isAppActive = ref(false);
 
 // Computed properties
 const formattedTime = computed(() => {
@@ -222,7 +225,7 @@ const setTimer = (duration, type) => {
   setDuration(duration, type);
 };
 
-watch([timeRemaining, isActive], ([rTime, sActive]) => {
+watch([timeRemaining, isActive, isAppActive], ([rTime, sActive, isAppActive]) => {
   if (rTime <= 1 && isActive.value) {
     checkSessionCompletion()
   }
@@ -255,39 +258,21 @@ const checkSessionCompletion = () => {
 };
 
 
-const playCompletionSound = () => {
-  // Simple water drop sound using Web Audio API
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(
-    400,
-    audioContext.currentTime + 0.3
-  );
-
-  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(
-    0.01,
-    audioContext.currentTime + 0.3
-  );
-
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + 0.3);
-};
-
-// Set up interval to check for completion
-// const completionInterval = setInterval(checkSessionCompletion, 1000);
+const isAppVisible = () => {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      isAppActive.value = true
+    } else {
+      isAppActive.value = false
+    }
+  });
+}
 
 onMounted(()=> {
   setDefaultTimers(defaultWorkDuration, defaultBreakDuration)
+
+  isAppVisible()
+
 })
 
-onUnmounted(() => {
-  // clearInterval(completionInterval);
-});
 </script>

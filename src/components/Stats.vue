@@ -5,7 +5,7 @@
     <!-- Quick Stats -->
     <div class="quick-stats">
       <div class="stat-card">
-        <div class="stat-number pixel-text ">{{ todaysSessions }}</div>
+        <div class="stat-number pixel-text">{{ todaysSessions }}</div>
         <div class="stat-label pixel-text">Today</div>
       </div>
 
@@ -49,10 +49,7 @@
     </div>
 
     <!-- Recent Sessions -->
-    <div
-      class="recent-sessions"
-      v-if="recentSessions.length > 0"
-    >
+    <div class="recent-sessions" v-if="recentSessions.length > 0">
       <h3 class="pixel-text">
         <span class="icon_emoji">🕐</span> Recent Sessions
       </h3>
@@ -75,20 +72,28 @@
             </div>
           </div>
           <div class="pixel-text --night-invert hide__mobile">
-            {{ formatLocalDate(session.createdAt) }} - {{ formatLocalDate(session.completedAt) }}
+            {{ formatLocalDate(session.createdAt) }} -
+            {{ formatLocalDate(session.completedAt) }}
           </div>
           <div class="session-status">
             {{ session.completed ? "✅" : "❌" }}
           </div>
         </div>
       </div>
+
+      <div class="clear-session-container">
+        <button
+          class="clear-session-btn pixel-btn control-btn stop-btn"
+          @click="onClearClick"
+        >
+          <span>🛑</span>
+          <span> Clear session </span>
+        </button>
+      </div>
     </div>
 
     <!-- Achievement System -->
-    <div
-      class="achievements"
-      v-if="unlockedAchievements.length > 0"
-    >
+    <div class="achievements" v-if="unlockedAchievements.length > 0">
       <h3 class="pixel-text">🏆 Achievements</h3>
       <div class="achievement-list">
         <div
@@ -110,27 +115,40 @@
     </div>
 
     <!-- Empty State -->
-    <div
-      class="empty-state"
-      v-if="totalSessions === 0"
-    >
+    <div class="empty-state" v-if="totalSessions === 0">
       <div class="empty-icon">🌱</div>
       <p class="pixel-text">
         Start your first session to begin tracking your productivity journey!
       </p>
     </div>
+
+      
+      <MessageDisplay
+        v-if="showClearConfirm"
+        type="error"
+        render="fixed"
+        classes="clear-confirm-message"
+      >
+        <div>{{ clearMessage }}</div>
+        <div class="clear-confirm-controlls">
+          <button @click="confirmClear(true)" class="confirm-btn pixel-btn control-btn start-btn">Yes</button>
+          <button @click="confirmClear(false)" class="cancel-btn pixel-btn control-btn stop-btn">No</button>
+        </div>
+      </MessageDisplay>
+
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import MessageDisplay from "./MessageDisplay.vue";
 
 const props = defineProps({
-  sessions: Array
-})
+  sessions: Array,
+});
 
 function formatLocalDate(dateString) {
-  return new Date(dateString).toLocaleTimeString()
+  return new Date(dateString).toLocaleTimeString();
 }
 
 // Calculate today's sessions
@@ -233,7 +251,24 @@ const unlockedAchievements = computed(() => {
   return achievements;
 });
 
-// Utility functions
+const showClearConfirm = ref(false);
+const clearMessage = "Are you sure you want to clear the session?";
+
+function clearSession() {
+  localStorage.removeItem("vodastate_sessions");
+}
+
+function onClearClick() {
+  showClearConfirm.value = true;
+}
+
+function confirmClear(confirmed) {
+  showClearConfirm.value = false;
+  if (confirmed) {
+    clearSession();
+  }
+}
+
 const formatDuration = (seconds) => {
   const minutes = Math.floor(seconds / 60);
   return `${minutes}min`;

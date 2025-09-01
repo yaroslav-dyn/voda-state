@@ -392,6 +392,10 @@ body {
   min-width: 100px;
 }
 
+.control-btn > span {
+   vertical-align: middle;
+}
+
 .start-btn {
   background: var(--success-green);
   border-color: var(--success-green);
