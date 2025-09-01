@@ -522,6 +522,29 @@
   font-size: 1.25rem;
 }
 
+.clear-session-container {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.clear-session-btn {
+  flex: 0 0 auto
+}
+
+.clear-confirm-message {
+  bottom: 2rem;
+  height: max-content;
+  width: max-content;
+  top: unset !important;
+}
+
+.clear-confirm-controlls {
+  text-align: center;
+  margin-top: 1rem;
+}
+
 /* Achievements */
 .achievements {
   margin: 2rem 0;
