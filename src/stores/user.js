@@ -43,14 +43,12 @@ export const useUserStore = defineStore('user', () => {
 
   async function saveSession(sessionData) {
     const sessions = getSessions()
-
     const newSession = {
       id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
       userId: user.value?.id,
-      ...sessionData,
-      // createdAt: new Date().toISOString()
+      ...sessionData
     }
-
     sessions.push(newSession)
     localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
     return newSession

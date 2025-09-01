@@ -147,6 +147,8 @@ const props = defineProps({
   sessions: Array,
 });
 
+const emit = defineEmits(['session-delete'])
+
 function formatLocalDate(dateString) {
   return new Date(dateString).toLocaleTimeString();
 }
@@ -255,7 +257,8 @@ const showClearConfirm = ref(false);
 const clearMessage = "Are you sure you want to clear the session?";
 
 function clearSession() {
-  localStorage.removeItem("vodastate_sessions");
+  localStorage.removeItem("vodastate_sessions")
+  emit('session-delete')
 }
 
 function onClearClick() {

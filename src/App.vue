@@ -88,7 +88,10 @@
 
           <!-- Stats Section -->
           <section class="stats-section">
-            <Stats :sessions="userSessions" />
+            <Stats 
+              :sessions="userSessions" 
+              @session-delete="loadUserSessions" 
+            />
           </section>
         </div>
       </main>
