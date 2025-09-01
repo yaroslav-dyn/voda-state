@@ -6,11 +6,47 @@ export const useUserStore = defineStore('user', () => {
   const user = ref(null)
   const ghostUser = ref(false)
   const isLoading = ref(false)
-  const { user: spUser, initializeAuthSpBase, isLoading: spLoading, signOutSpBase } = useSupabase()
+  const { user: spUser, initializeAuthSpBase, isLoading: spLoading, signOutSpBase, supabase } = useSupabase()
 
   // Initialize user from localStorage
-  const initializeAuth = () => {
+  const initializeAuth = async () => {
     initializeAuthSpBase()
+    await syncSessions()
+  }
+
+  // Synchronize sessions between Supabase and localStorage
+  async function syncSessions() {
+    if (!user.value?.id) return
+    try {
+      const supabaseSessions = await fetchSessionsByuser_id(user.value.id)
+      const localSessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+
+      // Create a map for quick lookup
+      const localSessionIds = new Set(localSessions.map(s => s.id))
+      const supabaseSessionIds = new Set(supabaseSessions.map(s => s.id))
+
+      // Find sessions in localStorage not in Supabase
+      const sessionsToInsert = localSessions.filter(s => !supabaseSessionIds.has(s.id))
+
+      // Insert missing local sessions into Supabase
+      if (sessionsToInsert.length > 0) {
+        const { error } = await supabase.from('sessions').insert(sessionsToInsert)
+        if (error) throw error
+      }
+
+      // Merge sessions from Supabase and localStorage
+      const mergedSessions = [...supabaseSessions]
+      localSessions.forEach(localSession => {
+        if (!supabaseSessionIds.has(localSession.id)) {
+          mergedSessions.push(localSession)
+        }
+      })
+
+      // Update localStorage with merged sessions
+      localStorage.setItem('vodastate_sessions', JSON.stringify(mergedSessions))
+    } catch (error) {
+      console.error('Error synchronizing sessions:', error)
+    }
   }
 
   watch([spUser, spLoading], ([val]) => {
@@ -31,27 +67,94 @@ export const useUserStore = defineStore('user', () => {
     user.value = null
   }
 
-  function getSessions() {
-    const sessions = localStorage.getItem('vodastate_sessions')
-    return sessions ? JSON.parse(sessions) : []
+  async function fetchSessionsByuser_id(user_id) {
+    if (!user_id) return []
+    try {
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('user_id', user_id)
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching sessions from Supabase:', error)
+      return []
+    }
   }
 
-  function getSessionsByUserId(userId) {
-    const sessions = getSessions()
-    return sessions.filter(session => session.userId === userId)
+  async function getSessions() {
+    if (!user.value?.id) return []
+    try {
+      const sessions = await fetchSessionsByuser_id(user.value.id)
+      if (sessions.length > 0) {
+        localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
+        return sessions
+      }
+      // Fallback to localStorage if no sessions from Supabase
+      const localSessions = localStorage.getItem('vodastate_sessions')
+      return localSessions ? JSON.parse(localSessions) : []
+    } catch (error) {
+      console.error('Error fetching sessions:', error)
+      // Fallback to localStorage on error
+      const localSessions = localStorage.getItem('vodastate_sessions')
+      return localSessions ? JSON.parse(localSessions) : []
+    }
   }
 
   async function saveSession(sessionData) {
-    const sessions = getSessions()
     const newSession = {
       id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      userId: user.value?.id,
+      created_at: new Date().toISOString(),
+      user_id: user.value?.id,
       ...sessionData
     }
-    sessions.push(newSession)
-    localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
-    return newSession
+    try {
+      const { data, error } = await supabase
+        .from('sessions')
+        .insert([newSession])
+      if (error) throw error
+      // Update localStorage with new session
+      const sessions = await getSessions()
+      // Avoid duplicate session if already present
+      if (!sessions.find(s => s.id === newSession.id)) {
+        sessions.push(newSession)
+      }
+      localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
+      return newSession
+    } catch (error) {
+      console.error('Error saving session to Supabase:', error)
+      // Fallback to localStorage only
+      const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+      if (!sessions.find(s => s.id === newSession.id)) {
+        sessions.push(newSession)
+      }
+      localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
+      return newSession
+    }
+  }
+
+  async function deleteSession(user_id) {
+    
+    if (!user_id) return false
+    try {
+      const { error } = await supabase
+        .from('sessions')
+        .delete()
+        .eq('user_id', user_id)
+      if (error) throw error
+      // Remove from localStorage
+      const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+      const filteredSessions = sessions.filter(s => s.user_id !== user_id)
+      localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
+      return true
+    } catch (error) {
+      console.error('Error deleting sessions from Supabase:', error)
+      // Fallback: remove from localStorage only
+      const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+      const filteredSessions = sessions.filter(s => s.user_id !== user_id)
+      localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
+      return false
+    }
   }
 
   // Initialize on store creation
@@ -64,7 +167,8 @@ export const useUserStore = defineStore('user', () => {
     signInGostMode,
     signOut,
     saveSession,
-    getSessions: () => getSessionsByUserId(user.value?.id),
-    initializeAuth
+    deleteSession,
+    getSessions,
+    syncSessions
   }
 })

@@ -68,12 +68,12 @@
               {{ formatDuration(session.duration) }}
             </div>
             <div class="session-date pixel-text --night-invert">
-              {{ formatDate(session.completedAt) }}
+              {{ formatDate(session.completed_at) }}
             </div>
           </div>
           <div class="pixel-text --night-invert hide__mobile">
-            {{ formatLocalDate(session.createdAt) }} -
-            {{ formatLocalDate(session.completedAt) }}
+            {{ formatLocalDate(session.created_at) }} -
+            {{ formatLocalDate(session.completed_at) }}
           </div>
           <div class="session-status">
             {{ session.completed ? "✅" : "❌" }}
@@ -157,7 +157,7 @@ function formatLocalDate(dateString) {
 const todaysSessions = computed(() => {
   const today = new Date().toDateString();
   return props.sessions.filter((session) => {
-    const sessionDate = new Date(session.completedAt).toDateString();
+    const sessionDate = new Date(session.completed_at).toDateString();
     return sessionDate === today && session.completed;
   }).length;
 });
@@ -168,7 +168,7 @@ const thisWeekSessions = computed(() => {
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
   return props.sessions.filter((session) => {
-    const sessionDate = new Date(session.completedAt);
+    const sessionDate = new Date(session.completed_at);
     return sessionDate >= oneWeekAgo && session.completed;
   }).length;
 });
@@ -189,7 +189,7 @@ const currentStreak = computed(() => {
   while (true) {
     const dayString = checkDate.toDateString();
     const dayHasSessions = props.sessions.some((session) => {
-      const sessionDate = new Date(session.completedAt).toDateString();
+      const sessionDate = new Date(session.completed_at).toDateString();
       return sessionDate === dayString && session.completed;
     });
 
@@ -205,7 +205,7 @@ const currentStreak = computed(() => {
 // Get recent sessions (last 10)
 const recentSessions = computed(() => {
   return [...props.sessions]
-    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
+    .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))
     .slice(0, 10);
 });
 
