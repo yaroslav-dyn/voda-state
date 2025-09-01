@@ -90,7 +90,7 @@
           <section class="stats-section">
             <Stats 
               :sessions="userSessions" 
-              @session-delete="loadUserSessions" 
+              @session-delete="deleteSessionhandler" 
             />
           </section>
         </div>
@@ -146,6 +146,7 @@ const { user, ghostUser, isLoading } = storeToRefs(userStore);
 const signOut = userStore.signOut;
 const getSessions = userStore.getSessions;
 const saveSession = userStore.saveSession;
+const deleteSession = userStore.deleteSession
 const { getMessage } = useMotivation();
 
 const appName = ref(APP_NAME);
@@ -195,10 +196,19 @@ const loadUserSessions = async () => {
   try {
     const sessions = await getSessions();
     userSessions.value = sessions;
+    
   } catch (error) {
     console.error("Failed to load sessions:", error);
   }
 };
+
+// Delete user sessions
+const deleteSessionhandler = async () => {
+  const res = await deleteSession(user.value.id);
+  if(res) {
+     await loadUserSessions()
+  }
+}
 
 // Watch for timer progress updates
 const updateTimerProgress = (progress) => {

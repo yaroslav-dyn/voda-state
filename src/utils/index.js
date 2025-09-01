@@ -48,3 +48,21 @@ export const playCompletionSound = () => {
   oscillator.start(audioContext.currentTime);
   oscillator.stop(audioContext.currentTime + 0.3);
 };
+
+
+
+function camelToSnake(str) {
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+}
+
+function keysToSnakeCase(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(v => keysToSnakeCase(v))
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[camelToSnake(key)] = keysToSnakeCase(obj[key])
+      return acc
+    }, {})
+  }
+  return obj
+}
