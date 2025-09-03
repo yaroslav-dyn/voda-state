@@ -195,7 +195,7 @@ const handleSessionComplete = async (sessionData) => {
 const loadUserSessions = async () => {
   try {
     const sessions = await getSessions();
-    userSessions.value = sessions;
+    userSessions.value = sessions || [];
     
   } catch (error) {
     console.error("Failed to load sessions:", error);
@@ -204,7 +204,7 @@ const loadUserSessions = async () => {
 
 // Delete user sessions
 const deleteSessionhandler = async () => {
-  const res = await deleteSession(user.value.id);
+  const res = await deleteSession(user ? user?.value?.id : undefined);
   if(res) {
      await loadUserSessions()
   }

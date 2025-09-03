@@ -155,7 +155,6 @@ const {
   isStartWorkAuto,
 } = storeToRefs(settingsStore);
 
-
 // Computed properties
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeRemaining.value / 60);
@@ -211,14 +210,11 @@ const setTimer = (duration, type) => {
   setDuration(duration, type);
 };
 
-watch(
-  [timeRemaining, isActive],
-  ([rTime, sActive]) => {
-    if (rTime === 0 && sActive) {
-      checkSessionCompletion();
-    }
+watch([timeRemaining, isActive], ([rTime, sActive]) => {
+  if (rTime === 1 && sActive) {
+    checkSessionCompletion();
   }
-);
+});
 
 // Watch for session completion
 const checkSessionCompletion = () => {
@@ -229,20 +225,21 @@ const checkSessionCompletion = () => {
     created_at: new Date(startTimestamp.value).toISOString(),
     completed_at: new Date(endTimestamp.value).toISOString(),
   };
-  emit("session-complete", sessionData);
-
+  setTimeout(() => emit("session-complete", sessionData), 1000);
   // Play completion sound (if enabled)
   playCompletionSound();
 
-  if (isStartBreakAuto.value && sessionType.value === "work") {
-    stop();
-    setTimer(defaultBreakDuration.value, "break");
-    startTimer("break");
-  } else if (isStartWorkAuto.value && sessionType.value === "break") {
-    stop();
-    setTimer(defaultWorkDuration.value, "work");
-    startTimer("work");
-  }
+  setTimeout(() => {
+    if (isStartBreakAuto.value && sessionType.value === "work") {
+      stop();
+      setTimer(defaultBreakDuration.value, "break");
+      startTimer("break");
+    } else if (isStartWorkAuto.value && sessionType.value === "break") {
+      stop();
+      setTimer(defaultWorkDuration.value, "work");
+      startTimer("work");
+    }
+  }, 1000);
 };
 
 onMounted(() => {

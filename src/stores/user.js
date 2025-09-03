@@ -92,7 +92,7 @@ export const useUserStore = defineStore('user', () => {
     else if (!user.value?.id) return []
     try {
       const sessions = await fetchSessionsByuser_id(user.value.id)
-      if (sessions.length > 0) {
+      if (sessions && sessions.length > 0) {
         localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
         return sessions
       }
@@ -115,7 +115,7 @@ export const useUserStore = defineStore('user', () => {
       // Update localStorage with new session
       let sessions = await getSessions()
       // Avoid duplicate session if already present
-      if (!sessions.find(s => s.id === newSession.id)) {
+      if (sessions && !sessions.find(s => s.id === newSession.id)) {
         sessions.push(newSession)
       }
       if (!ghostUser.value) {
@@ -154,17 +154,19 @@ export const useUserStore = defineStore('user', () => {
         // Remove from localStorage
         const filteredSessions = sessions.filter(s => s.user_id !== user_id)
         localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
-      } else if (!ghostUser.value) {
-        const filteredSessions = sessions.filter(s => !s.user_id)
+      } else if (ghostUser.value) {
+        const filteredSessions = sessions.filter(s => !s.hasOwnProperty('user_id'))
         localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
       }
       return true
     } catch (error) {
       console.error('Error deleting sessions from Supabase:', error)
       // Fallback: remove from localStorage only
-      const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
-      const filteredSessions = sessions.filter(s => s.user_id !== user_id)
-      localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
+      if(user_id) {
+        const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+        const filteredSessions = sessions.filter(s => s.user_id !== user_id)
+        localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
+      }
       return false
     }
   }
