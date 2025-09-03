@@ -114,6 +114,7 @@
 import { computed, onUnmounted, onMounted, watch, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useTimer } from "../composables/useTimer";
+import { useWorkerTimer } from "../composables/useWorkerTimer";
 import {
   workPresets,
   breakPresets,
@@ -144,7 +145,7 @@ const {
   setDefaultTimers,
   startTimestamp,
   endTimestamp,
-} = useTimer();
+} = useWorkerTimer();
 
 const settingsStore = useSettingsStore();
 const {
@@ -154,7 +155,6 @@ const {
   isStartWorkAuto,
 } = storeToRefs(settingsStore);
 
-const isAppActive = ref(false);
 
 // Computed properties
 const formattedTime = computed(() => {
@@ -212,9 +212,9 @@ const setTimer = (duration, type) => {
 };
 
 watch(
-  [timeRemaining, isActive, isAppActive],
-  ([rTime, sActive, isAppActive]) => {
-    if (rTime <= 1 && isActive.value) {
+  [timeRemaining, isActive],
+  ([rTime, sActive]) => {
+    if (rTime === 0 && sActive) {
       checkSessionCompletion();
     }
   }
@@ -245,19 +245,7 @@ const checkSessionCompletion = () => {
   }
 };
 
-const isAppVisible = () => {
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      isAppActive.value = true;
-    } else {
-      isAppActive.value = false;
-    }
-  });
-};
-
 onMounted(() => {
   setDefaultTimers(defaultWorkDuration, defaultBreakDuration);
-
-  isAppVisible();
 });
 </script>
