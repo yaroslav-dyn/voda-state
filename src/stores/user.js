@@ -83,16 +83,19 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function getSessions() {
-    if (!user.value?.id) return []
+    if (ghostUser.value) {
+      // Fallback to localStorage if gost user
+      const localSessions = localStorage.getItem('vodastate_sessions')
+      const parsedSession =  localSessions ? JSON.parse(localSessions) : []
+      return parsedSession.filter(ses => !ses.user_id)
+    }
+    else if (!user.value?.id) return []
     try {
       const sessions = await fetchSessionsByuser_id(user.value.id)
       if (sessions.length > 0) {
         localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
         return sessions
       }
-      // Fallback to localStorage if no sessions from Supabase
-      const localSessions = localStorage.getItem('vodastate_sessions')
-      return localSessions ? JSON.parse(localSessions) : []
     } catch (error) {
       console.error('Error fetching sessions:', error)
       // Fallback to localStorage on error
@@ -109,16 +112,19 @@ export const useUserStore = defineStore('user', () => {
       ...sessionData
     }
     try {
-      const { data, error } = await supabase
-        .from('sessions')
-        .insert([newSession])
-      if (error) throw error
       // Update localStorage with new session
-      const sessions = await getSessions()
+      let sessions = await getSessions()
       // Avoid duplicate session if already present
       if (!sessions.find(s => s.id === newSession.id)) {
         sessions.push(newSession)
       }
+      if (!ghostUser.value) {
+        const { data, error } = await supabase
+          .from('sessions')
+          .insert([newSession])
+        if (error) throw error
+      }
+ 
       localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
       return newSession
     } catch (error) {
@@ -135,17 +141,23 @@ export const useUserStore = defineStore('user', () => {
 
   async function deleteSession(user_id) {
     
-    if (!user_id) return false
+    if (!ghostUser.value && !user_id) return false
+
     try {
-      const { error } = await supabase
-        .from('sessions')
-        .delete()
-        .eq('user_id', user_id)
-      if (error) throw error
-      // Remove from localStorage
       const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
-      const filteredSessions = sessions.filter(s => s.user_id !== user_id)
-      localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
+      if (user_id) {
+        const { error } = await supabase
+          .from('sessions')
+          .delete()
+          .eq('user_id', user_id)
+        if (error) throw error
+        // Remove from localStorage
+        const filteredSessions = sessions.filter(s => s.user_id !== user_id)
+        localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
+      } else if (!ghostUser.value) {
+        const filteredSessions = sessions.filter(s => !s.user_id)
+        localStorage.setItem('vodastate_sessions', JSON.stringify(filteredSessions))
+      }
       return true
     } catch (error) {
       console.error('Error deleting sessions from Supabase:', error)
