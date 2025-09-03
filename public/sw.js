@@ -2,10 +2,6 @@ const CACHE_NAME = 'vodastate-v1.0.0';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/src/main.js',
-  '/src/App.vue',
-  '/src/styles/main.css',
-  '/src/styles/pixel-art.css',
   '/manifest.json'
 ];
 

@@ -534,10 +534,10 @@
 }
 
 .clear-confirm-message {
-  bottom: 2rem;
+  bottom: unset;
   height: max-content;
   width: max-content;
-  top: unset !important;
+  top: calc(50% - 108px/2) !important;
 }
 
 .clear-confirm-controlls {

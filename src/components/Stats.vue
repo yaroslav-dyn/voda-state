@@ -131,8 +131,8 @@
       >
         <div>{{ clearMessage }}</div>
         <div class="clear-confirm-controlls">
-          <button @click="confirmClear(true)" class="confirm-btn pixel-btn control-btn start-btn">Yes</button>
           <button @click="confirmClear(false)" class="cancel-btn pixel-btn control-btn stop-btn">No</button>
+          <button @click="confirmClear(true)" class="confirm-btn pixel-btn control-btn start-btn">Yes</button>
         </div>
       </MessageDisplay>
 
@@ -156,7 +156,7 @@ function formatLocalDate(dateString) {
 // Calculate today's sessions
 const todaysSessions = computed(() => {
   const today = new Date().toDateString();
-  return props.sessions.filter((session) => {
+  return props.sessions && props.sessions.filter((session) => {
     const sessionDate = new Date(session.completed_at).toDateString();
     return sessionDate === today && session.completed;
   }).length;
@@ -167,7 +167,7 @@ const thisWeekSessions = computed(() => {
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-  return props.sessions.filter((session) => {
+  return props.sessions && props.sessions.filter((session) => {
     const sessionDate = new Date(session.completed_at);
     return sessionDate >= oneWeekAgo && session.completed;
   }).length;
@@ -175,12 +175,12 @@ const thisWeekSessions = computed(() => {
 
 // Calculate total completed sessions
 const totalSessions = computed(() => {
-  return props.sessions.filter((session) => session.completed).length;
+  return props.sessions && props.sessions.filter((session) => session.completed).length;
 });
 
 // Calculate current streak
 const currentStreak = computed(() => {
-  if (props.sessions.length === 0) return 0;
+  if (props.sessions && props.sessions.length === 0) return 0;
 
   let streak = 0;
   const today = new Date();

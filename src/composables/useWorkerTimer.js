@@ -1,7 +1,11 @@
 import { ref, computed } from 'vue'
-const timerWorker = new Worker('src/workers/timerWorker.js');
+
+const timerWorker = new Worker(
+  new URL('../workers/timerWorker.js', import.meta.url), { type: 'module' }
+);
 
 export function useWorkerTimer() {
+
   const timeRemaining = ref(0)
   const selectedDuration = ref(0)
   const isActive = ref(false)
@@ -14,11 +18,11 @@ export function useWorkerTimer() {
   timerWorker.onmessage = (event) => {
     const data = event.data;
     if (data.remainingTime !== undefined) {
-      console.log('Remaining time:', data.remainingTime);
       timeRemaining.value = data.remainingTime
     }
     if (data.done) {
-      setTimeout(() => stopTimer(), 500)
+      // setTimeout(() => stopTimer(), 1000)
+      stopTimer()
     }
   };
 
