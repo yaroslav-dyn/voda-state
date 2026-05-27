@@ -11,7 +11,7 @@ export default defineConfig({
       filename: 'sw.js',
       manifest: false, // Use existing public/manifest.json
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2,ttf}'],
       },
       devOptions: {
         enabled: true,
