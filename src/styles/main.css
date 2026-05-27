@@ -1,3 +1,12 @@
+/* Self-hosted Press Start 2P font */
+@font-face {
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+}
+
 /* Reset and base styles */
 * {
   margin: 0;
@@ -298,6 +307,32 @@ body {
 .auth-btn.--warning {
   background-color: var(--warning-orange);
   border-color: var(--warning-orange);
+}
+
+.auth-btn.--disabled {
+  background-color: #9ca3af;
+  border-color: #9ca3af;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-btn.--primary {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.soon-badge {
+  display: inline-block;
+  background: #f59e0b;
+  color: #1f2937;
+  font-size: 0.55rem;
+  font-weight: bold;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  margin-left: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
 }
 
 /* Timer specific styles */

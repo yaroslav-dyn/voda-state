@@ -1,8 +1,24 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
+      manifest: false, // Use existing public/manifest.json
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
+    }),
+  ],
   server: {
     host: '0.0.0.0',
     port: 5000
