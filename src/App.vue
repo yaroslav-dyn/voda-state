@@ -3,6 +3,42 @@
     id="app"
     :class="themeClass"
   >
+    <!-- Offline Indicator -->
+    <div
+      v-if="!isOnline"
+      class="offline-banner pixel-text"
+    >
+      <span class="icon_emoji">📴</span> Offline mode — sessions saved locally
+    </div>
+
+    <!-- Sync Prompt Modal -->
+    <div
+      v-if="showSyncPrompt"
+      class="sync-prompt-overlay"
+    >
+      <div class="sync-prompt-modal">
+        <h3 class="pixel-text">Sync Offline Sessions?</h3>
+        <p class="pixel-text">
+          You have {{ pendingSyncCount }} session(s) saved offline.
+          Sync them to your account?
+        </p>
+        <div class="sync-prompt-actions">
+          <button
+            @click="handleSyncNow"
+            class="pixel-btn sync-btn --primary"
+          >
+            Sync Now
+          </button>
+          <button
+            @click="handleKeepLocal"
+            class="pixel-btn sync-btn --secondary"
+          >
+            Keep Local
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="app-container">
       <!--SECTION: Header -->
       <header class="app-header">
@@ -120,12 +156,12 @@
   </div>
 
   <footer :class="['app-footer', themeClass]">
-    <small class="pixel-text">© 2025 {{ appName }}. {{ version }}v</small>
+    <small class="pixel-text">©{{currentYear}} {{ appName }}. {{ version }}v</small>
   </footer>
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from "vue";
+import { ref, computed, watchEffect, onMounted, onUnmounted } from "vue";
 import Timer from "./components/Timer.vue";
 import Bottle from "./components/Bottle.vue";
 import Stats from "./components/Stats.vue";
@@ -146,7 +182,8 @@ const { user, ghostUser, isLoading } = storeToRefs(userStore);
 const signOut = userStore.signOut;
 const getSessions = userStore.getSessions;
 const saveSession = userStore.saveSession;
-const deleteSession = userStore.deleteSession
+const deleteSession = userStore.deleteSession;
+const syncSessions = userStore.syncSessions;
 const { getMessage } = useMotivation();
 
 const appName = ref(APP_NAME);
@@ -159,6 +196,60 @@ const isSettingsOpen = ref(false);
 const currentMessage = ref(
   `Welcome to ${APP_NAME}! Stay hydrated and focused.`
 );
+
+// Offline detection & sync
+const isOnline = ref(navigator.onLine);
+const showSyncPrompt = ref(false);
+const pendingSyncCount = ref(0);
+
+
+const currentYear = computed(()=> {
+  const currentDate = new Date();
+  return currentDate.getFullYear()
+} )
+
+const checkPendingSyncSessions = () => {
+  try {
+    const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+    // Count sessions that have a user_id but were saved locally (offline sessions)
+    return sessions.filter(s => s.user_id && !s.synced).length
+  } catch {
+    return 0
+  }
+}
+
+const handleOnline = () => {
+  isOnline.value = true
+  const pending = checkPendingSyncSessions()
+  if (pending > 0 && user.value?.id) {
+    pendingSyncCount.value = pending
+    showSyncPrompt.value = true
+  }
+}
+
+const handleOffline = () => {
+  isOnline.value = false
+  showSyncPrompt.value = false
+}
+
+const handleSyncNow = async () => {
+  showSyncPrompt.value = false
+  try {
+    await syncSessions()
+    // Mark sessions as synced
+    const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+    sessions.forEach(s => { if (s.user_id) s.synced = true })
+    localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
+    currentMessage.value = 'Sessions synced successfully! 🌊'
+  } catch (error) {
+    console.error('Sync failed:', error)
+    currentMessage.value = 'Sync failed. Sessions kept locally. ⚠️'
+  }
+}
+
+const handleKeepLocal = () => {
+  showSyncPrompt.value = false
+}
 
 // Theme based on time of day
 const themeClass = computed(() => {
@@ -228,6 +319,16 @@ const openSettigns = async () => {
   isSettingsOpen.value = !isSettingsOpen.value;
 };
 
+onMounted(() => {
+  window.addEventListener('online', handleOnline)
+  window.addEventListener('offline', handleOffline)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('online', handleOnline)
+  window.removeEventListener('offline', handleOffline)
+})
+
 watchEffect(async () => {
   await loadUserSessions();
 });
@@ -244,5 +345,73 @@ watchEffect(async () => {
 
 .app-footer small {
   font-size: 0.65rem;
+}
+
+/* Offline banner */
+.offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: #f59e0b;
+  color: #1f2937;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Sync prompt overlay */
+.sync-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sync-prompt-modal {
+  background: #f0f8ff;
+  border: 3px solid #4a90e2;
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.sync-prompt-modal h3 {
+  color: #4a90e2;
+  margin-bottom: 0.75rem;
+}
+
+.sync-prompt-modal p {
+  color: #374151;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.sync-prompt-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.sync-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.sync-btn.--primary {
+  background: #4a90e2;
+  color: white;
+}
+
+.sync-btn.--secondary {
+  background: #e5e7eb;
+  color: #374151;
 }
 </style>

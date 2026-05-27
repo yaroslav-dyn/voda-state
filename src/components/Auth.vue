@@ -65,17 +65,17 @@
         <h2 class="pixel-text">Ready to get started?</h2>
         <p class="pixel-text auth-subtitle">Sign in to save your progress</p>
 
-        <!-- Sign In Button -->
+        <!-- Sign In Button (disabled - Supabase limited) -->
         <button
-          @click="signInWithEmail"
-          :disabled="isLoading"
-          class="pixel-btn auth-btn email-btn"
+          disabled
+          class="pixel-btn auth-btn email-btn --disabled"
+          title="Coming soon"
         >
-          <div class="auth-btn__inner" v-if="!isLoading">
+          <div class="auth-btn__inner">
             <span class="icon_emoji --big">🔐</span>
             <span> Sign in with Email</span>
+            <span class="soon-badge">soon</span>
           </div>
-          <span v-else>⏳ Signing in...</span>
         </button>
 
         <!--TODO: Next implementation -->
@@ -96,7 +96,7 @@
         <button
           @click="signInGostMode"
           :disabled="isLoading"
-          class="pixel-btn auth-btn --warning google-btn"
+          class="pixel-btn auth-btn --primary google-btn"
         >
           <div class="auth-btn__inner" v-if="!isLoading">
             <span class="icon_emoji --big">👻</span>

@@ -32,3 +32,6 @@ client/.vite
 .replit
 replit.md
 
+# TESTS
+
+.playwright-mcp
