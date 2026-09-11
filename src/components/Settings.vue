@@ -99,6 +99,7 @@ const {
 
 const modalContent = ref<HTMLElement | null>(null)
 
+
 const closeModal = async (): Promise<void> => {
   emit('close-modal')
 }

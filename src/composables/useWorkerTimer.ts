@@ -82,9 +82,11 @@ export function useWorkerTimer() {
     switch (sessionType.value) {
       case 'work':
         selectedDuration.value = workDuration
+  
         break
       case 'break':
         selectedDuration.value = breakDuration
+  
         break
       default:
         return
