@@ -1,21 +1,12 @@
 <template>
-  <div
-    id="app"
-    :class="themeClass"
-  >
+  <div id="app" :class="themeClass">
     <!-- Offline Indicator -->
-    <div
-      v-if="!isOnline"
-      class="offline-banner pixel-text"
-    >
+    <div v-if="!isOnline" class="offline-banner pixel-text">
       <span class="icon_emoji">📴</span> Offline mode — sessions saved locally
     </div>
 
     <!-- Sync Prompt Modal -->
-    <div
-      v-if="showSyncPrompt"
-      class="sync-prompt-overlay"
-    >
+    <div v-if="showSyncPrompt" class="sync-prompt-overlay">
       <div class="sync-prompt-modal">
         <h3 class="pixel-text">Sync Offline Sessions?</h3>
         <p class="pixel-text">
@@ -23,18 +14,8 @@
           Sync them to your account?
         </p>
         <div class="sync-prompt-actions">
-          <button
-            @click="handleSyncNow"
-            class="pixel-btn sync-btn --primary"
-          >
-            Sync Now
-          </button>
-          <button
-            @click="handleKeepLocal"
-            class="pixel-btn sync-btn --secondary"
-          >
-            Keep Local
-          </button>
+          <button @click="handleSyncNow" class="pixel-btn sync-btn --primary">Sync Now</button>
+          <button @click="handleKeepLocal" class="pixel-btn sync-btn --secondary">Keep Local</button>
         </div>
       </div>
     </div>
@@ -43,63 +24,28 @@
       <!--SECTION: Header -->
       <header class="app-header">
         <div class="app-header__logo">
-          <img
-            class="d_logo"
-            :src="dropLogo"
-            :alt="appName"
-          />
+          <img class="d_logo" :src="dropLogo" :alt="appName" />
           <h1 class="app-title pixel-text --text-primary-blue isolated-color">{{ appName }}</h1>
         </div>
-        <div
-          :class="['user-info', { '--ghost-user': ghostUser }]"
-          v-if="!isLoading && (user || ghostUser)"
-        >
-          <span
-            v-if="!ghostUser"
-            class="user-info__nick pixel-text"
-          >{{
-            user.email
-          }}</span>
+        <div :class="['user-info', { '--ghost-user': ghostUser }]" v-if="!isLoading && (user || ghostUser)">
+          <span v-if="!ghostUser" class="user-info__nick pixel-text">{{ user?.email }}</span>
 
           <div class="user-info__mbottom">
-            <button
-              v-if="user"
-              @click="signOut"
-              class="user-info__button pixel-btn pixel-btn-small"
-            >
-              Sign Out
-            </button>
+            <button v-if="user" @click="signOut" class="user-info__button pixel-btn pixel-btn-small">Sign Out</button>
+            <button v-if="ghostUser" @click="signOut" class="user-info__button pixel-btn pixel-btn-small">Exit</button>
 
-            <button
-              v-if="ghostUser"
-              @click="signOut"
-              :class="['user-info__button pixel-btn pixel-btn-small']"
-            >
-              Exit
-            </button>
-
-            <button
-              @click="openSettigns"
-              class="user-info__settings plane-btn settings-icon"
-            >
+            <button @click="openSettings" class="user-info__settings plane-btn settings-icon">
               <span class="icon_emoji --x-big --bold --text-modern-dark --night-invert">⛭</span>
             </button>
           </div>
-
         </div>
       </header>
 
       <!--SECTION: Main Content -->
       <main class="main-content">
-        <Auth
-          v-if="!user && !ghostUser"
-          @user-authenticated="handleUserAuth"
-        />
+        <Auth v-if="!user && !ghostUser" @user-authenticated="handleUserAuth" />
 
-        <div
-          v-else-if="!isLoading"
-          class="app-dashboard"
-        >
+        <div v-else-if="!isLoading" class="app-dashboard">
           <!-- Motivation Message -->
           <div class="motivation-message --invert-bg">
             <p class="pixel-text motivation-text">{{ currentMessage }}</p>
@@ -116,109 +62,88 @@
 
           <!-- Bottle Section -->
           <section class="bottle-section">
-            <Bottle
-              :fill-percentage="timerProgress"
-              :is-active="isTimerActive"
-            />
+            <Bottle :fill-percentage="timerProgress" :is-active="isTimerActive" />
           </section>
 
           <!-- Stats Section -->
           <section class="stats-section">
-            <Stats 
-              :sessions="userSessions" 
-              @session-delete="deleteSessionhandler" 
-            />
+            <Stats :sessions="userSessions" @session-delete="deleteSessionHandler" />
           </section>
         </div>
       </main>
 
       <Transition name="slide-rihgt">
-        <Settings
-          v-if="isSettingsOpen"
-          isSettingsOpen="isSettingsOpen"
-          @close-modal="() => (isSettingsOpen = false)"
-        />
+        <Settings v-if="isSettingsOpen" :isSettingsOpen="isSettingsOpen" @close-modal="() => (isSettingsOpen = false)" />
       </Transition>
 
       <!--SECTION: Water Drop Animations -->
-      <section
-        class="water-drops"
-        v-if="showDrops"
-      >
-        <div
-          class="water-drop"
-          v-for="n in 3"
-          :key="n"
-          :style="{ '--delay': n * 0.5 + 's' }"
-        ></div>
+      <section class="water-drops" v-if="showDrops">
+        <div class="water-drop" v-for="n in 3" :key="n" :style="{ '--delay': n * 0.5 + 's' }"></div>
       </section>
     </div>
   </div>
 
   <footer :class="['app-footer', themeClass]">
-    <small class="pixel-text">©{{currentYear}} {{ appName }}. {{ version }}v</small>
+    <small class="pixel-text">©{{ currentYear }} {{ appName }}. {{ version }}v</small>
   </footer>
 </template>
 
-<script setup>
-import { ref, computed, watchEffect, onMounted, onUnmounted } from "vue";
-import Timer from "./components/Timer.vue";
-import Bottle from "./components/Bottle.vue";
-import Stats from "./components/Stats.vue";
-import Auth from "./components/Auth.vue";
-import { useMotivation } from "./composables/useMotivation";
-import { getTimeOfDay } from "./utils/timeUtils";
-import { useUserStore } from "./stores";
-import { storeToRefs } from "pinia";
-import dropLogo from "/img/drop_timer_512px.png";
-import Settings from "./components/Settings.vue";
-import { version } from '../package.json';
+<script setup lang="ts">
+import { ref, computed, watchEffect, onMounted, onUnmounted } from 'vue'
+import Timer from './components/Timer.vue'
+import Bottle from './components/Bottle.vue'
+import Stats from './components/Stats.vue'
+import Auth from './components/Auth.vue'
+import { useMotivation } from '@/composables/useMotivation'
+import { getTimeOfDay } from '@/utils/timeUtils'
+import { useUserStore } from '@/stores'
+import { storeToRefs } from 'pinia'
+const dropLogo = '/img/drop_timer_512px.png'
+import Settings from './components/Settings.vue'
+import { version } from '../package.json'
+import type { ISession, TSessionType } from '@/types'
 
-const APP_NAME = import.meta.env.VITE_APP_NAME;
+const APP_NAME = import.meta.env.VITE_APP_NAME
 
-const userStore = useUserStore();
-const { user, ghostUser, isLoading } = storeToRefs(userStore);
+const userStore = useUserStore()
+const { user, ghostUser, isLoading } = storeToRefs(userStore)
 
-const signOut = userStore.signOut;
-const getSessions = userStore.getSessions;
-const saveSession = userStore.saveSession;
-const deleteSession = userStore.deleteSession;
-const syncSessions = userStore.syncSessions;
-const { getMessage } = useMotivation();
+const signOut = userStore.signOut
+const getSessions = userStore.getSessions
+const saveSession = userStore.saveSession
+const deleteSession = userStore.deleteSession
+const syncSessions = userStore.syncSessions
+const { getMessage } = useMotivation()
 
-const appName = ref(APP_NAME);
-const timerProgress = ref(0);
-const isTimerActive = ref(false);
-const showDrops = ref(false);
-const isUserLogged = ref(false);
-const userSessions = ref([]);
-const isSettingsOpen = ref(false);
-const currentMessage = ref(
-  `Welcome to ${APP_NAME}! Stay hydrated and focused.`
-);
+const appName = ref<string>(APP_NAME)
+const timerProgress = ref<number>(0)
+const isTimerActive = ref<boolean>(false)
+const showDrops = ref<boolean>(false)
+const isUserLogged = ref<boolean>(false)
+const userSessions = ref<ISession[]>([])
+const isSettingsOpen = ref<boolean>(false)
+const currentMessage = ref<string>(`Welcome to ${APP_NAME}! Stay hydrated and focused.`)
 
 // Offline detection & sync
-const isOnline = ref(navigator.onLine);
-const showSyncPrompt = ref(false);
-const pendingSyncCount = ref(0);
+const isOnline = ref<boolean>(navigator.onLine)
+const showSyncPrompt = ref<boolean>(false)
+const pendingSyncCount = ref<number>(0)
 
-
-const currentYear = computed(()=> {
-  const currentDate = new Date();
+const currentYear = computed((): number => {
+  const currentDate = new Date()
   return currentDate.getFullYear()
-} )
+})
 
-const checkPendingSyncSessions = () => {
+const checkPendingSyncSessions = (): number => {
   try {
-    const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
-    // Count sessions that have a user_id but were saved locally (offline sessions)
-    return sessions.filter(s => s.user_id && !s.synced).length
+    const sessions: ISession[] = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+    return sessions.filter((s) => s.user_id && !s.synced).length
   } catch {
     return 0
   }
 }
 
-const handleOnline = () => {
+const handleOnline = (): void => {
   isOnline.value = true
   const pending = checkPendingSyncSessions()
   if (pending > 0 && user.value?.id) {
@@ -227,18 +152,17 @@ const handleOnline = () => {
   }
 }
 
-const handleOffline = () => {
+const handleOffline = (): void => {
   isOnline.value = false
   showSyncPrompt.value = false
 }
 
-const handleSyncNow = async () => {
+const handleSyncNow = async (): Promise<void> => {
   showSyncPrompt.value = false
   try {
     await syncSessions()
-    // Mark sessions as synced
-    const sessions = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
-    sessions.forEach(s => { if (s.user_id) s.synced = true })
+    const sessions: ISession[] = JSON.parse(localStorage.getItem('vodastate_sessions') || '[]')
+    sessions.forEach((s) => { if (s.user_id) s.synced = true })
     localStorage.setItem('vodastate_sessions', JSON.stringify(sessions))
     currentMessage.value = 'Sessions synced successfully! 🌊'
   } catch (error) {
@@ -247,77 +171,72 @@ const handleSyncNow = async () => {
   }
 }
 
-const handleKeepLocal = () => {
+const handleKeepLocal = (): void => {
   showSyncPrompt.value = false
 }
 
-// Theme based on time of day
-const themeClass = computed(() => {
-  const timeOfDay = getTimeOfDay();
-  return `theme-${timeOfDay}`;
-});
+const themeClass = computed((): string => {
+  const timeOfDay = getTimeOfDay()
+  return `theme-${timeOfDay}`
+})
 
-// Handle user authentication
-const handleUserAuth = (userData) => {
-  currentMessage.value = getMessage("welcome", userData.email);
-  isUserLogged.value = !!userData;
-  loadUserSessions();
-};
+const handleUserAuth = (userData: { email: string }): void => {
+  currentMessage.value = getMessage('welcome')
+  isUserLogged.value = !!userData
+  loadUserSessions()
+}
 
-// Handle session events
-const handleSessionStart = (sessionType) => {
-  isTimerActive.value = true;
-  showDrops.value = true;
-  currentMessage.value = getMessage("session_start", sessionType);
-};
+const handleSessionStart = (sessionType: TSessionType): void => {
+  isTimerActive.value = true
+  showDrops.value = true
+  currentMessage.value = getMessage('session_start', sessionType)
+}
 
-const handleSessionComplete = async (sessionData) => {
-  isTimerActive.value = false;
-  showDrops.value = false;
-  timerProgress.value = 0;
+const handleSessionComplete = async (sessionData: {
+  type: TSessionType
+  duration: number
+  completed: boolean
+  completed_at: string
+}): Promise<void> => {
+  isTimerActive.value = false
+  showDrops.value = false
+  timerProgress.value = 0
 
-  currentMessage.value = getMessage("session_complete", sessionData.type);
-  // Save to database
-  await saveSession(sessionData);
-  await loadUserSessions();
-};
+  currentMessage.value = getMessage('session_complete', sessionData.type)
+  await saveSession(sessionData)
+  await loadUserSessions()
+}
 
-// Load user sessions
-const loadUserSessions = async () => {
+const loadUserSessions = async (): Promise<void> => {
   try {
-    const sessions = await getSessions();
-    userSessions.value = sessions || [];
-    
+    const sessions = await getSessions()
+    userSessions.value = sessions || []
   } catch (error) {
-    console.error("Failed to load sessions:", error);
-  }
-};
-
-// Delete user sessions
-const deleteSessionhandler = async () => {
-  const res = await deleteSession(user ? user?.value?.id : undefined);
-  if(res) {
-     await loadUserSessions()
+    console.error('Failed to load sessions:', error)
   }
 }
 
-// Watch for timer progress updates
-const updateTimerProgress = (progress) => {
-  timerProgress.value = progress;
-  // console.log("🚀 ~ updateTimerProgress ~ progress:", progress, isTimerActive.value)
-  // Show motivational messages at certain progress points
-  if (progress === 25) {
-    currentMessage.value = getMessage("quarter_progress");
-  } else if (progress === 50) {
-    currentMessage.value = getMessage("half_progress");
-  } else if (progress === 75) {
-    currentMessage.value = getMessage("three_quarter_progress");
+const deleteSessionHandler = async (): Promise<void> => {
+  const res = await deleteSession(user.value?.id)
+  if (res) {
+    await loadUserSessions()
   }
-};
+}
 
-const openSettigns = async () => {
-  isSettingsOpen.value = !isSettingsOpen.value;
-};
+const updateTimerProgress = (progress: number): void => {
+  timerProgress.value = progress
+  if (progress === 25) {
+    currentMessage.value = getMessage('quarter_progress')
+  } else if (progress === 50) {
+    currentMessage.value = getMessage('half_progress')
+  } else if (progress === 75) {
+    currentMessage.value = getMessage('three_quarter_progress')
+  }
+}
+
+const openSettings = (): void => {
+  isSettingsOpen.value = !isSettingsOpen.value
+}
 
 onMounted(() => {
   window.addEventListener('online', handleOnline)
@@ -330,8 +249,8 @@ onUnmounted(() => {
 })
 
 watchEffect(async () => {
-  await loadUserSessions();
-});
+  await loadUserSessions()
+})
 </script>
 
 <style scoped>
@@ -347,7 +266,6 @@ watchEffect(async () => {
   font-size: 0.65rem;
 }
 
-/* Offline banner */
 .offline-banner {
   position: fixed;
   top: 0;
@@ -361,7 +279,6 @@ watchEffect(async () => {
   font-size: 0.75rem;
 }
 
-/* Sync prompt overlay */
 .sync-prompt-overlay {
   position: fixed;
   inset: 0;

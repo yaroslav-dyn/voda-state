@@ -3,14 +3,8 @@
     :class="['settings-modal-wrapper --invert-bg', { open: isSettingsOpen }]"
     @click.self="closeModal"
   >
-    <div
-      ref="modalContent"
-      :class="['settings-modal', { open: isSettingsOpen }]"
-    >
-      <button
-        @click="closeModal"
-        class="close-button plane-btn settings-icon"
-      >
+    <div ref="modalContent" :class="['settings-modal', { open: isSettingsOpen }]">
+      <button @click="closeModal" class="close-button plane-btn settings-icon">
         <span class="icon_emoji --big --red">✖️</span>
       </button>
 
@@ -22,13 +16,11 @@
 
           <div class="preset-group">
             <button
-              v-for="preset in getTimePressets().work"
+              v-for="preset in getTimePresets().work"
               :key="preset.minutes"
               @click="setDefaultTimerParams(preset.minutes * 60, 'work')"
               class="pixel-btn preset-btn"
-              :class="{
-                active: defaultWorkDuration === preset.minutes * 60,
-              }"
+              :class="{ active: defaultWorkDuration === preset.minutes * 60 }"
             >
               {{ preset.minutes }}min
             </button>
@@ -40,13 +32,11 @@
 
           <div class="preset-group">
             <button
-              v-for="preset in getTimePressets().break"
+              v-for="preset in getTimePresets().break"
               :key="preset.minutes"
               @click="setDefaultTimerParams(preset.minutes * 60, 'break')"
               class="pixel-btn preset-btn break-btn"
-              :class="{
-                active: defaultBreakDuration === preset.minutes * 60,
-              }"
+              :class="{ active: defaultBreakDuration === preset.minutes * 60 }"
             >
               {{ preset.minutes }}min
             </button>
@@ -64,10 +54,7 @@
             id="isStartWork"
             type="checkbox"
           />
-          <label
-            for="isStartWork"
-            class="settings_item__heading pixel-text"
-          >
+          <label for="isStartWork" class="settings_item__heading pixel-text">
             Start The work automatically, after break session.
           </label>
         </div>
@@ -83,57 +70,38 @@
             id="isStartBreak"
             type="checkbox"
           />
-          <label
-            for="isStartBreak"
-            class="settings_item__heading pixel-text"
-          >
+          <label for="isStartBreak" class="settings_item__heading pixel-text">
             Start The break automatically, after work session.
           </label>
         </div>
       </section>
     </div>
-
-
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { storeToRefs } from "pinia";
-import { workPresets, breakPresets, getTimePressets } from "../utils";
-const { isSettingsOpen } = defineProps(["isSettingsOpen"]);
-const emit = defineEmits(["close-modal"]);
-import { useSettingsStore } from "../stores/settings";
-const settingsStore = useSettingsStore();
-const { setDefaultTimerParams, changeStartBreakAuto, changeStartWorkAuto } = settingsStore;
+<script setup lang="ts">
+import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { getTimePresets } from '@/utils'
+import { useSettingsStore } from '@/stores/settings'
+
+defineProps<{ isSettingsOpen: boolean }>()
+const emit = defineEmits<{ 'close-modal': [] }>()
+
+const settingsStore = useSettingsStore()
+const { setDefaultTimerParams, changeStartBreakAuto, changeStartWorkAuto } = settingsStore
 const {
   defaultWorkDuration,
   defaultBreakDuration,
   isStartBreakAuto,
   isStartWorkAuto
-} = storeToRefs(settingsStore);
+} = storeToRefs(settingsStore)
 
-const modalContent = ref(null);
+const modalContent = ref<HTMLElement | null>(null)
 
-const closeModal = async () => {
-  emit("close-modal");
-};
-
-// Optional: Add event listener on document to close modal on outside click (alternative to @click.self)
-// onMounted(() => {
-//   document.addEventListener("click", handleClickOutside);
-// });
-
-// onBeforeUnmount(() => {
-//   document.removeEventListener("click", handleClickOutside);
-// });
-
-// function handleClickOutside(event) {
-//   if (modalContent.value && !modalContent.value.contains(event.target)) {
-//     closeModal();
-//   }
-// }
-
+const closeModal = async (): Promise<void> => {
+  emit('close-modal')
+}
 </script>
 
 <style scoped>
@@ -148,7 +116,6 @@ const closeModal = async () => {
   backdrop-filter: blur(10px);
   width: 40%;
   height: 100%;
-  /* transition: all 1s ease-in-out 0.4s; */
 }
 @media screen and (max-width: 767px) {
   .settings-modal-wrapper {
@@ -192,7 +159,6 @@ const closeModal = async () => {
 
 .slide-rihgt-enter-from,
 .slide-rihgt-leave-to {
-  /* right: 0; */
   transform: translateX(100%);
 }
 
@@ -204,7 +170,6 @@ const closeModal = async () => {
   font-size: 0.8rem;
 }
 
-/* Pixel style checkbox input */
 .settings_pixel__input {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -239,11 +204,6 @@ const closeModal = async () => {
   width: 5px;
   height: 10px;
   display: flex;
-  /* flex-direction: column;
-  justify-self: center;
-  align-self: center;
-  align-items: center;
-  justify-content: center; */
   border: solid white;
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);

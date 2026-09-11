@@ -1,32 +1,31 @@
 import { ref, computed } from 'vue'
+import type { TSessionType, TTimerWorkerCommand, ITimerWorkerResponse } from '@/types'
 
 const timerWorker = new Worker(
-  new URL('../workers/timerWorker.js', import.meta.url), { type: 'module' }
-);
+  new URL('../workers/timerWorker.ts', import.meta.url), { type: 'module' }
+)
 
 export function useWorkerTimer() {
+  const timeRemaining = ref<number>(0)
+  const selectedDuration = ref<number>(0)
+  const isActive = ref<boolean>(false)
+  const isPaused = ref<boolean>(false)
+  const sessionType = ref<TSessionType>('work')
+  const sessionCount = ref<number>(0)
+  const startTimestamp = ref<number | null>(null)
+  const endTimestamp = ref<number | null>(null)
 
-  const timeRemaining = ref(0)
-  const selectedDuration = ref(0)
-  const isActive = ref(false)
-  const isPaused = ref(false)
-  const sessionType = ref('work')
-  const sessionCount = ref(0)
-  const startTimestamp = ref(null)
-  const endTimestamp = ref(null)
-
-  timerWorker.onmessage = (event) => {
-    const data = event.data;
+  timerWorker.onmessage = (event: MessageEvent<ITimerWorkerResponse>) => {
+    const data = event.data
     if (data.remainingTime !== undefined) {
       timeRemaining.value = data.remainingTime
     }
     if (data.done) {
-      // setTimeout(() => stopTimer(), 1000)
       stopTimer()
     }
-  };
+  }
 
-  const startTimer = () => {
+  const startTimer = (): void => {
     if (timeRemaining.value === selectedDuration.value) {
       sessionCount.value += 1
     } else if (timeRemaining.value === 0) {
@@ -39,36 +38,39 @@ export function useWorkerTimer() {
     startTimestamp.value = Date.now()
     endTimestamp.value = startTimestamp.value + timeRemaining.value * 1000
 
-    timerWorker.postMessage({ command: 'start', duration: selectedDuration.value })
+    const command: TTimerWorkerCommand = { command: 'start', duration: selectedDuration.value }
+    timerWorker.postMessage(command)
   }
 
-
-  const pauseTimer = () => {
+  const pauseTimer = (): void => {
     isPaused.value = true
-    timerWorker.postMessage({ command: 'pause' });
+    const command: TTimerWorkerCommand = { command: 'pause' }
+    timerWorker.postMessage(command)
   }
 
-  const resumeTimer = () => {
+  const resumeTimer = (): void => {
     isPaused.value = false
-    timerWorker.postMessage({ command: 'resume' })
+    const command: TTimerWorkerCommand = { command: 'resume' }
+    timerWorker.postMessage(command)
   }
 
-  const stopTimer = () => {
+  const stopTimer = (): void => {
     isActive.value = false
     isPaused.value = false
 
-    timerWorker.postMessage({ command: 'stop' });
+    const command: TTimerWorkerCommand = { command: 'stop' }
+    timerWorker.postMessage(command)
     startTimestamp.value = null
     endTimestamp.value = null
   }
 
-  const resetTimer = () => {
+  const resetTimer = (): void => {
     stopTimer()
     timeRemaining.value = 0
     sessionCount.value = 0
   }
 
-  const setTimer = (duration, type = 'work') => {
+  const setTimer = (duration: number, type: TSessionType = 'work'): void => {
     if (!isActive.value) {
       selectedDuration.value = duration
       timeRemaining.value = duration
@@ -76,24 +78,23 @@ export function useWorkerTimer() {
     }
   }
 
-  const setDefaultTimers = (workDuration, breakDuration) => {
+  const setDefaultTimers = (workDuration: number, breakDuration: number): void => {
     switch (sessionType.value) {
       case 'work':
-        selectedDuration.value = workDuration.value
+        selectedDuration.value = workDuration
         break
       case 'break':
-        selectedDuration.value = breakDuration.value
+        selectedDuration.value = breakDuration
         break
       default:
-        return undefined
+        return
     }
   }
 
-  const progress = computed(() => {
+  const progress = computed((): number => {
     if (selectedDuration.value === 0) return 0
     return ((selectedDuration.value - timeRemaining.value) / selectedDuration.value) * 100
   })
-
 
   return {
     timeRemaining,
@@ -113,5 +114,4 @@ export function useWorkerTimer() {
     startTimestamp,
     endTimestamp
   }
-
 }

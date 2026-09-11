@@ -1,9 +1,8 @@
-<!-- Login.vue Component -->
 <template>
   <div class="auth-container">
     <div class="auth-header">
-      <h2 class="pixel-text app-title">Welcome <br /> to {{APP_NAME}}</h2>
-      <p clasds="pixel-text">Stay hydrated and focused!</p>
+      <h2 class="pixel-text app-title">Welcome <br /> to {{ APP_NAME }}</h2>
+      <p class="pixel-text">Stay hydrated and focused!</p>
     </div>
 
     <!-- Login Form -->
@@ -31,14 +30,11 @@
       </div>
 
       <button type="submit" class="auth-btn pixel-btn" :disabled="loading">
-       <span class="pixel-text"> {{ loading ? "Signing In..." : "Sign In" }}</span>
+        <span class="pixel-text"> {{ loading ? 'Signing In...' : 'Sign In' }}</span>
       </button>
 
-      <button
-        @click="emit('on-close')"
-        class="auth-btn --warning pixel-btn pixel-btn-small"
-      >
-       <span class="pixel-text"> Close</span>
+      <button @click="emit('on-close')" class="auth-btn --warning pixel-btn pixel-btn-small">
+        <span class="pixel-text"> Close</span>
       </button>
 
       <div class="auth-link pixel-text">
@@ -53,7 +49,6 @@
 
     <!-- Sign Up Form -->
     <form @submit.prevent="handleSignUp" v-if="showSignUp && !showResetPassword" class="auth-form">
-      
       <div class="input-group">
         <label class="pixel-text">Email</label>
         <input
@@ -89,7 +84,7 @@
       </div>
 
       <button type="submit" class="auth-btn pixel-btn" :disabled="loading">
-        {{ loading ? "Creating Account..." : "💧 Create Account" }}
+        {{ loading ? 'Creating Account...' : '💧 Create Account' }}
       </button>
 
       <p class="auth-link">
@@ -99,11 +94,7 @@
     </form>
 
     <!-- Reset Password Form -->
-    <form
-      @submit.prevent="handleResetPassword"
-      v-if="showResetPassword"
-      class="auth-form"
-    >
+    <form @submit.prevent="handleResetPassword" v-if="showResetPassword" class="auth-form">
       <div class="input-group">
         <label>Email</label>
         <input
@@ -116,7 +107,7 @@
       </div>
 
       <button type="submit" class="auth-btn" :disabled="loading">
-        {{ loading ? "Sending..." : "🔄 Reset Password" }}
+        {{ loading ? 'Sending...' : '🔄 Reset Password' }}
       </button>
 
       <p class="auth-link">
@@ -125,78 +116,75 @@
     </form>
 
     <!-- Error Message -->
-    <MessageDisplay v-if="error" type="error" render="static" class="pixel-text">
-      {{ error }}
+    <MessageDisplay v-if="localError" type="error" render="static" class="pixel-text">
+      {{ localError }}
     </MessageDisplay>
 
     <!-- Success Message -->
     <MessageDisplay v-if="successMessage" type="success" render="static" class="pixel-text">
       {{ successMessage }}
     </MessageDisplay>
-
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-import { useAuth } from "../composables/useEmailAuth";
-import MessageDisplay from "./MessageDisplay.vue";
-const APP_NAME = import.meta.env.VITE_APP_NAME;
-const emit = defineEmits(["on-close"]);
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useAuth } from '@/composables/useEmailAuth'
+import MessageDisplay from './MessageDisplay.vue'
 
-const { loading, error, signIn, signUp, resetPassword } = useAuth();
+const APP_NAME = import.meta.env.VITE_APP_NAME
+const emit = defineEmits(['on-close'])
 
-const showSignUp = ref(false);
-const showResetPassword = ref(false);
-const successMessage = ref("");
+const { loading, signIn, signUp, resetPassword } = useAuth()
 
-const loginForm = ref({
-  email: "",
-  password: "",
-});
+const showSignUp = ref<boolean>(false)
+const showResetPassword = ref<boolean>(false)
+const successMessage = ref<string>('')
+const localError = ref<string>('')
 
-const signUpForm = ref({
-  email: "",
-  password: "",
-  confirmPassword: "",
-});
+const loginForm = ref<{ email: string; password: string }>({
+  email: '',
+  password: ''
+})
 
-const resetForm = ref({
-  email: "",
-});
+const signUpForm = ref<{ email: string; password: string; confirmPassword: string }>({
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
 
-const handleLogin = async () => {
-  const result = await signIn(loginForm.value.email, loginForm.value.password);
+const resetForm = ref<{ email: string }>({
+  email: ''
+})
+
+const handleLogin = async (): Promise<void> => {
+  const result = await signIn(loginForm.value.email, loginForm.value.password)
   if (result.success) {
-    successMessage.value = "Welcome back! Stay hydrated! 🌊";
+    successMessage.value = 'Welcome back! Stay hydrated! 🌊'
     emit('on-close')
   }
-};
+}
 
-const handleSignUp = async () => {
+const handleSignUp = async (): Promise<void> => {
   if (signUpForm.value.password !== signUpForm.value.confirmPassword) {
-    error.value = "Passwords do not match";
-    return;
+    localError.value = 'Passwords do not match'
+    return
   }
 
-  const result = await signUp(
-    signUpForm.value.email,
-    signUpForm.value.password
-  );
+  const result = await signUp(signUpForm.value.email, signUpForm.value.password)
   if (result.success) {
-    successMessage.value =
-      "Account created! Check your email for confirmation. 📧";
-    showSignUp.value = false;
+    successMessage.value = 'Account created! Check your email for confirmation. 📧'
+    showSignUp.value = false
   }
-};
+}
 
-const handleResetPassword = async () => {
-  const result = await resetPassword(resetForm.value.email);
+const handleResetPassword = async (): Promise<void> => {
+  const result = await resetPassword(resetForm.value.email)
   if (result.success) {
-    successMessage.value = "Password reset email sent! Check your inbox. 📬";
-    showResetPassword.value = false;
+    successMessage.value = 'Password reset email sent! Check your inbox. 📬'
+    showResetPassword.value = false
   }
-};
+}
 </script>
 
 <style scoped>

@@ -2,9 +2,7 @@
   <div class="timer-container --invert-bg">
     <!-- Timer Display -->
     <div class="timer-display">
-      <div class="time-remaining pixel-text">
-        {{ formattedTime }}
-      </div>
+      <div class="time-remaining pixel-text">{{ formattedTime }}</div>
       <div class="session-info">
         <div class="session-type pixel-text">
           <div class="session-type__item" v-if="isWorkTypeLabel">
@@ -15,9 +13,7 @@
             <span class="session-type__icon">☕</span>
             <span>Break Time</span>
           </div>
-          <div class="session-counter pixel-text">
-            Session {{ sessionCount }}
-          </div>
+          <div class="session-counter pixel-text">Session {{ sessionCount }}</div>
         </div>
       </div>
     </div>
@@ -27,14 +23,12 @@
       <h3 class="pixel-text">Work Sessions</h3>
       <div class="preset-group">
         <button
-          v-for="preset in getTimePressets().work"
+          v-for="preset in getTimePresets().work"
           :key="preset.minutes"
-          @click="setTimer(preset.minutes * 60, 'work')"
+          @click="() => setTimer(preset.minutes * 60, 'work')"
           class="pixel-btn preset-btn"
           :class="{
-            active:
-              selectedDuration === preset.minutes * 60 &&
-              sessionType === 'work',
+            active: selectedDuration === preset.minutes * 60 && sessionType === 'work',
           }"
         >
           {{ preset.minutes }}min
@@ -44,14 +38,12 @@
       <h3 class="pixel-text">Break Sessions</h3>
       <div class="preset-group">
         <button
-          v-for="preset in getTimePressets().break"
+          v-for="preset in getTimePresets().break"
           :key="preset.minutes"
-          @click="setTimer(preset.minutes * 60, 'break')"
+          @click="() => setTimer(preset.minutes * 60, 'break')"
           class="pixel-btn preset-btn break-btn"
           :class="{
-            active:
-              selectedDuration === preset.minutes * 60 &&
-              sessionType === 'break',
+            active: selectedDuration === preset.minutes * 60 && sessionType === 'break',
           }"
         >
           {{ preset.minutes }}min
@@ -63,7 +55,7 @@
     <div class="timer-controls">
       <button
         v-if="!isActive"
-        @click="startTimer"
+        @click="() => startTimer()"
         :disabled="!selectedDuration"
         class="pixel-btn control-btn start-btn"
       >
@@ -86,7 +78,7 @@
           <span>▶️</span> <span>Resume</span>
         </button>
         <button
-          @click="() => stopTimer(undefined)"
+          @click="() => stopTimer()"
           class="pixel-btn control-btn stop-btn"
         >
           <span>🛑</span> <span>Stop</span>
@@ -101,33 +93,31 @@
     <!-- Progress Bar -->
     <div class="progress-container" v-if="selectedDuration">
       <div class="progress-bar">
-        <div
-          class="progress-fill"
-          :style="{ width: progressPercentage + '%' }"
-        ></div>
+        <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { computed, onUnmounted, onMounted, watch, ref } from "vue";
-import { storeToRefs } from "pinia";
-import { useTimer } from "../composables/useTimer";
-import { useWorkerTimer } from "../composables/useWorkerTimer";
-import {
-  workPresets,
-  breakPresets,
-  getTimePressets,
-  playCompletionSound,
-} from "../utils";
-import { useSettingsStore } from "../stores";
+<script setup lang="ts">
+import { computed, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useWorkerTimer } from '@/composables/useWorkerTimer'
+import { getTimePresets, playCompletionSound } from '@/utils'
+import { useSettingsStore } from '@/stores'
+import type { TSessionType } from '@/types'
 
-const emit = defineEmits([
-  "session-complete",
-  "session-start",
-  "progress-update",
-]);
+const emit = defineEmits<{
+  'session-complete': [sessionData: {
+    type: TSessionType
+    duration: number
+    completed: boolean
+    completed_at: string
+    created_at?: string
+  }]
+  'session-start': [sessionType: TSessionType]
+  'progress-update': [progress: number]
+}>()
 
 const {
   timeRemaining,
@@ -144,105 +134,99 @@ const {
   setTimer: setDuration,
   setDefaultTimers,
   startTimestamp,
-  endTimestamp,
-} = useWorkerTimer();
+  endTimestamp
+} = useWorkerTimer()
 
-const settingsStore = useSettingsStore();
+const settingsStore = useSettingsStore()
 const {
   defaultWorkDuration,
   defaultBreakDuration,
   isStartBreakAuto,
-  isStartWorkAuto,
-} = storeToRefs(settingsStore);
+  isStartWorkAuto
+} = storeToRefs(settingsStore)
 
-// Computed properties
-const formattedTime = computed(() => {
-  const minutes = Math.floor(timeRemaining.value / 60);
-  const seconds = timeRemaining.value % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds
-    .toString()
-    .padStart(2, "0")}`;
-});
+const formattedTime = computed((): string => {
+  const minutes = Math.floor(timeRemaining.value / 60)
+  const seconds = timeRemaining.value % 60
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+})
 
-const isWorkTypeLabel = computed(() => sessionType.value === "work");
+const isWorkTypeLabel = computed((): boolean => sessionType.value === 'work')
 
-const progressPercentage = computed(() => {
-  if (!selectedDuration.value) return 0;
-  const timerPersentValue =
-    ((selectedDuration.value - timeRemaining.value) / selectedDuration.value) *
-    100;
-  if (Math.round(timerPersentValue % 5 === 0)) {
-    emit("progress-update", timerPersentValue);
+const progressPercentage = computed((): number => {
+  if (!selectedDuration.value) return 0
+  const timerPersentValue = ((selectedDuration.value - timeRemaining.value) / selectedDuration.value) * 100
+  if (Math.round(timerPersentValue) % 5 === 0) {
+    emit('progress-update', timerPersentValue)
   }
-  return timerPersentValue;
-});
+  return timerPersentValue
+})
 
-//NOTE: Timer control methods
-const startTimer = (type) => {
-  start();
-  emit("session-start", !type ? sessionType.value : type);
-};
+const startTimer = (type?: TSessionType): void => {
+  start()
+  emit('session-start', type || sessionType.value)
+}
 
-const pauseTimer = () => {
-  pause();
-};
+const pauseTimer = (): void => {
+  pause()
+}
 
-const resumeTimer = () => {
-  resume();
-};
+const resumeTimer = (): void => {
+  resume()
+}
 
-const stopTimer = (isComplete) => {
+const stopTimer = (isComplete?: boolean): void => {
   const sessionData = {
     type: sessionType.value,
     duration: selectedDuration.value,
     completed: isComplete ?? false,
-    completed_at: new Date().toISOString(),
-  };
-  stop();
-  emit("session-complete", sessionData);
-};
+    completed_at: new Date().toISOString()
+  }
+  stop()
+  emit('session-complete', sessionData)
+}
 
-const resetTimer = () => {
-  reset();
-};
+const resetTimer = (): void => {
+  reset()
+}
 
-const setTimer = (duration, type) => {
-  setDuration(duration, type);
-};
+const setTimer = (duration: number, type: TSessionType): void => {
+  setDuration(duration, type)
+}
 
 watch([timeRemaining, isActive], ([rTime, sActive]) => {
   if (rTime === 1 && sActive) {
-    checkSessionCompletion();
+    checkSessionCompletion()
   }
-});
+})
 
-// Watch for session completion
-const checkSessionCompletion = () => {
+const checkSessionCompletion = (): void => {
+  if (!startTimestamp.value || !endTimestamp.value) return
+
   const sessionData = {
     type: sessionType.value,
     duration: selectedDuration.value,
     completed: true,
     created_at: new Date(startTimestamp.value).toISOString(),
-    completed_at: new Date(endTimestamp.value).toISOString(),
-  };
-  setTimeout(() => emit("session-complete", sessionData), 1000);
-  // Play completion sound (if enabled)
-  playCompletionSound();
+    completed_at: new Date(endTimestamp.value).toISOString()
+  }
+  setTimeout(() => emit('session-complete', sessionData), 1000)
+  playCompletionSound()
 
   setTimeout(() => {
-    if (isStartBreakAuto.value && sessionType.value === "work") {
-      stop();
-      setTimer(defaultBreakDuration.value, "break");
-      startTimer("break");
-    } else if (isStartWorkAuto.value && sessionType.value === "break") {
-      stop();
-      setTimer(defaultWorkDuration.value, "work");
-      startTimer("work");
+    if (isStartBreakAuto.value && sessionType.value === 'work' && defaultBreakDuration.value !== null) {
+      stop()
+      setTimer(defaultBreakDuration.value, 'break')
+      startTimer('break')
+    } else if (isStartWorkAuto.value && sessionType.value === 'break' && defaultWorkDuration.value !== null) {
+      stop()
+      setTimer(defaultWorkDuration.value, 'work')
+      startTimer('work')
     }
-  }, 1000);
-};
+  }, 1000)
+}
 
 onMounted(() => {
-  setDefaultTimers(defaultWorkDuration, defaultBreakDuration);
-});
+  setDefaultTimers(defaultWorkDuration.value ?? 0, defaultBreakDuration.value ?? 0)
+})
 </script>

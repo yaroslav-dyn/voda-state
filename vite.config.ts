@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
-      filename: 'sw.js',
-      manifest: false, // Use existing public/manifest.json
+      filename: 'sw.ts',
+      manifest: false,
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2,ttf}'],
       },
@@ -35,5 +35,10 @@ export default defineConfig({
   define: {
     __VUE_OPTIONS_API__: true,
     __VUE_PROD_DEVTOOLS__: false
+  },
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
   }
 })

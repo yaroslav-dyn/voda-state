@@ -9,18 +9,13 @@
       <div class="demo-bottle-container">
         <div class="demo-bottle">
           <div class="bottle-outline"></div>
-          <div
-            class="demo-water-fill"
-            :style="{ height: demoFillLevel + '%' }"
-          ></div>
+          <div class="demo-water-fill" :style="{ height: demoFillLevel + '%' }"></div>
           <div class="bottle-cap"></div>
           <div class="demo-bubbles">
             <div class="bubble" v-for="n in 3" :key="n"></div>
           </div>
         </div>
-        <p class="pixel-text demo-text">
-          Watch your productivity bottle fill as you focus!
-        </p>
+        <p class="pixel-text demo-text">Watch your productivity bottle fill as you focus!</p>
       </div>
 
       <!-- Features -->
@@ -78,23 +73,8 @@
           </div>
         </button>
 
-        <!--TODO: Next implementation -->
-        <!-- <button
-          @click="signInWithGoogle"
-          :disabled="isLoading || !isDev"
-          class="pixel-btn auth-btn google-btn"
-        >
-          <div class="auth-btn__inner" v-if="!isLoading">
-            <span class="icon_emoji --big">🔐</span>
-            <span>
-              Sign in with Google {{ !isDev ? "Comming soon!" : "" }}</span
-            >
-          </div>
-          <span v-else>⏳ Signing in...</span>
-        </button> -->
-
         <button
-          @click="signInGostMode"
+          @click="signInGhostMode"
           :disabled="isLoading"
           class="pixel-btn auth-btn --primary google-btn"
         >
@@ -116,56 +96,50 @@
       </div>
     </div>
 
-  <!--SECTION: Auth from -->
-
-    <SignInForm 
+    <!--SECTION: Auth from -->
+    <SignInForm
       v-if="showSignInModal"
-      @on-close="signInWithEmail" 
+      @on-close="signInWithEmail"
     />
-
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onUnmounted} from "vue";
-import { useUserStore } from "../stores/user";
-import { storeToRefs } from "pinia";
-import SignInForm from "./SignIn.vue";
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useUserStore } from '@/stores/user'
+import SignInForm from './SignIn.vue'
 
-const emit = defineEmits(["user-authenticated"]);
+const emit = defineEmits(['user-authenticated'])
 
-const userStore = useUserStore();
-const signInGostMode = userStore?.signInGostMode;
-const { user } = storeToRefs(userStore);
-const isDev = ref(import.meta.env.DEV);
-const isLoading = ref(false);
-const error = ref("");
-const demoFillLevel = ref(0);
-const showSignInModal = ref(false);
+const userStore = useUserStore()
+const signInGhostMode = userStore.signInGhostMode
+const isLoading = ref<boolean>(false)
+const error = ref<string>('')
+const demoFillLevel = ref<number>(0)
+const showSignInModal = ref<boolean>(false)
 
-let demoInterval = null;
+let demoInterval: ReturnType<typeof setInterval> | null = null
 
-// Demo bottle animation
-const startDemoAnimation = () => {
+const startDemoAnimation = (): void => {
   demoInterval = setInterval(() => {
-    demoFillLevel.value += 2;
+    demoFillLevel.value += 2
     if (demoFillLevel.value >= 100) {
-      demoFillLevel.value = 0;
+      demoFillLevel.value = 0
     }
-  }, 100);
-};
+  }, 100)
+}
 
-const signInWithEmail = () => {
-  showSignInModal.value = !showSignInModal.value;
-};
+const signInWithEmail = (): void => {
+  showSignInModal.value = !showSignInModal.value
+}
 
-onMounted(async () => {
+onMounted(async (): Promise<void> => {
   startDemoAnimation()
-});
+})
 
 onUnmounted(() => {
   if (demoInterval) {
-    clearInterval(demoInterval);
+    clearInterval(demoInterval)
   }
-});
+})
 </script>

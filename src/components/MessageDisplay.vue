@@ -11,24 +11,18 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  type: {
-    type: String,
-    required: true,
-    validator: (value) => ['error', 'success'].includes(value),
-  },
-  render: {
-    type: String,
-    default: 'static',
-    validator: (value) => ['static', 'fixed'].includes(value),
-  },
-  classes: {
-    type: String,
-    default: '',
-  },
+interface MessageDisplayProps {
+  type: 'error' | 'success'
+  render?: 'static' | 'fixed'
+  classes?: string
+}
+
+const props = withDefaults(defineProps<MessageDisplayProps>(), {
+  render: 'static',
+  classes: ''
 })
 
 const baseClass = 'message-display pixel-text'

@@ -1,18 +1,16 @@
-
-
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useSupabase } from './useSupabase'
+import type { IAuthResult, IUser } from '@/types'
 
 export const useAuth = () => {
   const { supabase } = useSupabase()
-  const user = ref(null)
-  const loading = ref(false)
-  const error = ref(null)
+  const user = ref<IUser | null>(null)
+  const loading = ref<boolean>(false)
+  const error = ref<string | null>(null)
 
   const isAuthenticated = computed(() => !!user.value)
 
-  // Sign up with email
-  const signUp = async (email, password) => {
+  const signUp = async (email: string, password: string): Promise<IAuthResult> => {
     try {
       loading.value = true
       error.value = null
@@ -24,18 +22,17 @@ export const useAuth = () => {
 
       if (signUpError) throw signUpError
 
-      // User will receive confirmation email
       return { success: true, data }
     } catch (err) {
-      error.value = err.message
-      return { success: false, error: err.message }
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      error.value = message
+      return { success: false, error: message }
     } finally {
       loading.value = false
     }
   }
 
-  // Sign in with email
-  const signIn = async (email, password) => {
+  const signIn = async (email: string, password: string): Promise<IAuthResult> => {
     try {
       loading.value = true
       error.value = null
@@ -46,37 +43,25 @@ export const useAuth = () => {
 
       if (signInError) throw signInError
 
-      user.value = data.user
+      const supabaseUser = data.user
+      if (supabaseUser) {
+        user.value = {
+          ...supabaseUser,
+          id: supabaseUser.id,
+          email: supabaseUser.email ?? '',
+        } as IUser
+      }
       return { success: true, data }
     } catch (err) {
-      error.value = err.message
-
-      return { success: false, error: err.message }
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      error.value = message
+      return { success: false, error: message }
     } finally {
       loading.value = false
     }
   }
 
-  //TODO: DEPRECATED: Sign out
-  // const signOut = async () => {
-  //   try {
-  //     loading.value = true
-  //     const { error: signOutError } = await supabase.auth.signOut()
-
-  //     if (signOutError) throw signOutError
-
-  //     user.value = null
-  //     return { success: true }
-  //   } catch (err) {
-  //     error.value = err.message
-  //     return { success: false, error: err.message }
-  //   } finally {
-  //     loading.value = false
-  //   }
-  // }
-
-  // Reset password
-  const resetPassword = async (email) => {
+  const resetPassword = async (email: string): Promise<IAuthResult> => {
     try {
       loading.value = true
       error.value = null
@@ -89,8 +74,9 @@ export const useAuth = () => {
 
       return { success: true }
     } catch (err) {
-      error.value = err.message
-      return { success: false, error: err.message }
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      error.value = message
+      return { success: false, error: message }
     } finally {
       loading.value = false
     }
